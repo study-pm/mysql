@@ -1,1 +1,6 @@
 /res
+*.accdb
+*.doc
+*.docx
+*.laccdb
+*.pdf
