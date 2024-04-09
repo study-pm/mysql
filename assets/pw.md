@@ -313,3 +313,21 @@
     ```
 
     </details>
+
+### Итоговый алгоритм
+
+```
+mysql -u root
+show databases;
+use mysql;
+show tables;
+describe db;
+create database DBsalon;
+show databases;
+use DBsalon;
+describe users;
+insert into users (name, age) values ('Nick', 25), ('Tom', 34), ('Angelica', 21);
+drop table users;
+drop database DBsalon;
+show databases;
+```
