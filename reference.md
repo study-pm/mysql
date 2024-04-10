@@ -374,3 +374,40 @@ CREATE TABLE Customers
     Phone VARCHAR(20) CHECK(Phone !='')
 );
 ```
+
+## Изменение данных
+
+```sql
+CREATE DATABASE productsdb;
+USE productsdb;
+```
+
+```sql
+CREATE TABLE customers (
+    IdC INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT DEFAULT 18,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    Email VARCHAR(30) NOT NULL UNIQUE,
+    Phone VARCHAR(20) NOT NULL UNIQUE
+);
+```
+
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL;
+```
+
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL FIRST;
+```
+
+```sql
+CREATE TABLE Orders (
+IdO INT PRIMARY KEY AUTO_INCREMENT,
+CustomerId INT,
+CreatedAt DATE);
+```
+
+```sql
+ALTER TABLE Orders ADD FOREIGN KEY(CustomerId) REFERENCES Customers(IdC);
+```

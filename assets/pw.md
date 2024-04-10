@@ -384,7 +384,8 @@ mysql> CREATE TABLE room (
     capacity TINYINT UNSIGNED NOT NULL,
     price DECIMAL(8, 2) NOT NULL,
     phone_number VARCHAR(10) NOT NULL UNIQUE,
-    comfort_id INT UNSIGNED NOT NULL
+    comfort_id INT UNSIGNED NOT NULL,
+    CONSTRAINT check_phone CHECK(phone_number regexp '^[+][0-9]{8}$')
 );
 Query OK, 0 rows affected (0.01 sec)
 ```
@@ -403,7 +404,8 @@ mysql> CREATE TABLE client (
     passport_number CHAR(12) NOT NULL UNIQUE,
     birth_date DATE NOT NULL,
     address VARCHAR(100),
-    comment TEXT
+    comment TEXT,
+    CONSTRAINT check_passport CHECK(passport_number regexp '^[+][0-9]{10}$')
 );
 Query OK, 0 rows affected (0.01 sec)
 ```
@@ -444,7 +446,7 @@ Query OK, 0 rows affected (0.01 sec)
 ```
 mysql> CREATE TABLE phone (
     _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    number CHAR(12) NOT NULL UNIQUE,
+    number CHAR(12) NOT NULL UNIQUE CHECK(number regexp '^[+][0-9]{10}$'),
     client_id INT UNSIGNED NOT NULL
 );
 Query OK, 0 rows affected (0.01 sec)
