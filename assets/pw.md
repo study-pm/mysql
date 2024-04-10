@@ -331,3 +331,159 @@ drop table users;
 drop database DBsalon;
 show databases;
 ```
+
+## Работа 3.O. «Создание таблиц»
+
+### Задание 3.1.2
+
+В соответствии с предметной областью своего варианта создайте таблицы, используя язык DDL.
+
+#### Описание предметной области
+
+**Вариант 2: Гостиница**
+
+Гостиница предоставляет номера клиентам.  Каждый номер характеризуется вместимостью, комфортностью (люкс, полу люкс, обычный) и ценой.  О клиентах собирается определенная информация (фамилия, имя, отчество, паспортные данные, дата рождения, адрес жительства и некоторый комментарий).  Сдача номера (комфортность, количество человек, телефон) клиенту производится при наличии свободных мест в номерах, подходящих клиенту по указанным выше параметрам.  При заселении фиксируется дата заселения. При выезде из гостиницы для каждого места запоминается дата освобождения.Необходимо также осуществлять бронирование номеров.  Для постоянных клиентов, а также для определенных категорий клиентов предусмотрена система скидок. Скидки могут суммироваться.
+
+### Ход выполнения задания
+
+#### Составление инфологической модели
+
+Полученная инфологическая модель предметной области представлена на рисунке 1.
+
+![Рисунок 1 - Инфологическая модель предметной области](../img/infological_model.png)
+
+#### Создание базы данных
+
+```
+mysql> CREATE DATABASE hotel;
+Query OK, 1 row affected (0.00 sec)
+```
+
+#### Создание таблиц
+
+<details>
+<summary><b>Комфортабельность</b></summary>
+
+```
+mysql> CREATE TABLE comfort (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    type_name VARCHAR(30) NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Номера</b></summary>
+
+```
+mysql> CREATE TABLE room (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    number VARCHAR(10) NOT NULL UNIQUE,
+    capacity TINYINT UNSIGNED NOT NULL,
+    price DECIMAL(8, 2) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL UNIQUE,
+    comfort_id INT UNSIGNED NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Клиенты</b></summary>
+
+```
+mysql> CREATE TABLE client (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    last_name VARCHAR(30) NOT NULL,
+    first_name VARCHAR(30) NOT NULL,
+    second_name VARCHAR(30) NOT NULL,
+    passport_number CHAR(12) NOT NULL UNIQUE,
+    birth_date DATE NOT NULL,
+    address VARCHAR(100),
+    comment TEXT
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Скидки</b></summary>
+
+```
+mysql> CREATE TABLE discount (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(30) NOT NULL,
+    value DECIMAL(3,2) NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Клиенты_Скидки</b></summary>
+
+```
+mysql> CREATE TABLE client_discount (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    client_id INT UNSIGNED NOT NULL,
+    discount_id INT UNSIGNED NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Телефоны</b></summary>
+
+```
+mysql> CREATE TABLE phone (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    number CHAR(12) NOT NULL UNIQUE,
+    client_id INT UNSIGNED NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Брони</b></summary>
+
+```
+mysql> CREATE TABLE reservation (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    enter_date DATE NOT NULL,
+    leave_date DATE NOT NULL,
+    room_id INT UNSIGNED NOT NULL,
+    client_id INT UNSIGNED NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Поселения</b></summary>
+
+```
+mysql> CREATE TABLE checkin (
+    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    enter_date DATE NOT NULL,
+    leave_date DATE NOT NULL,
+    room_id INT UNSIGNED NOT NULL,
+    client_id INT UNSIGNED NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+### Итоговый алгоритм
