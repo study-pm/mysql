@@ -1,6 +1,6 @@
 # Reference
 
-- [Commands](#commands)
+- [Основные команды](#основные-команды)
   - [Работа с базами данных](#работа-с-базами-данных)
     - [Показать БД](#показать-бд)
     - [Создание БД](#создание-бд)
@@ -12,15 +12,22 @@
     - [Переименование таблицы](#переименование-таблицы)
     - [Полное удаление данных (очистка таблицы)](#полное-удаление-данных-очистка-таблицы)
     - [Удаление таблицы](#удаление-таблицы)
-- [Data Types](#data-types)
+- [Типы данных](#типы-данных)
   - [Символьные типы](#символьные-типы)
   - [Числовые типы](#числовые-типы)
   - [Типы для работы с датой и временем](#типы-для-работы-с-датой-и-временем)
   - [Составные типы](#составные-типы)
   - [Бинарные типы](#бинарные-типы)
+- [Атрибуты столбцов и таблиц](#атрибуты-столбцов-и-таблиц)
+  - [`PRIMARY KEY`](#primary-key)
+  - [`AUTO_INCREMENT`](#auto_increment)
+  - [`UNIQUE`](#unique)
+  - [`NULL` и `NOT NULL`](#null-и-not-null)
+  - [`DEFAULT`](#default)
+  - [`CHECK`](#check)
 
 
-## Commands
+## Основные команды
 
 ### Работа с базами данных
 
@@ -88,7 +95,7 @@ TRUNCATE TABLE <название_таблицы>;
 DROP TABLE <название_таблицы>;
 ```
 
-## Data Types
+## Типы данных
 
 ### Символьные типы
 
@@ -223,3 +230,147 @@ DROP TABLE <название_таблицы>;
 
 - **`LONGBLOB`**: хранит бинарные данные в виде строки длиной до 4 ГБ
 
+## Атрибуты столбцов и таблиц
+https://metanit.com/sql/mysql/2.4.php
+
+### `PRIMARY KEY`
+
+Атрибут **`PRIMARY KEY`** задает первичный ключ таблицы.
+
+```sql
+USE productsdb;
+
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY,
+    Age INT,
+    FirstName VARCHAR(20),
+    LastName VARCHAR(20)
+);
+```
+
+Первичный ключ уникально идентифицирует строку в таблице. В качестве первичного ключа необязательно должны выступать столбцы с типом `int`, они могут представлять любой другой тип.
+
+Установка первичного ключа на уровне таблицы:
+
+```sql
+USE productsdb;
+CREATE TABLE Customers
+(
+    Id INT,
+    Age INT,
+    FirstName VARCHAR(20),
+    LastName VARCHAR(20),
+    PRIMARY KEY(Id)
+);
+```
+
+Первичный ключ может быть составным. Такой ключ использовать сразу несколько столбцов, чтобы уникально идентифицировать строку в таблице. Например:
+
+```sql
+CREATE TABLE OrderLines
+(
+    OrderId INT,
+    ProductId INT,
+    Quantity INT,
+    Price MONEY,
+    PRIMARY KEY(OrderId, ProductId)
+)
+```
+
+Здесь поля `OrderId` и `ProductId` вместе выступают как составной первичный ключ. То есть в таблице `OrderLines` не может быть двух строк, где для обоих из этих полей одновременно были бы одни и те же значения.
+
+### `AUTO_INCREMENT`
+Атрибут **`AUTO_INCREMENT**` позволяет указать, что значение столбца будет автоматически увеличиваться при добавлении новой строки. Данный атрибут работает для столбцов, которые представляют целочисленный тип или числа с плавающей точкой.
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT,
+    FirstName VARCHAR(20),
+    LastName VARCHAR(20)
+);
+```
+
+В данном случае значение столбца `Id` каждой новой добавленной строки будет увеличиваться на единицу.
+
+### `UNIQUE`
+Атрибут **`UNIQUE`** указывает, что столбец может хранить только уникальные значения.
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT,
+    FirstName VARCHAR(20),
+    LastName VARCHAR(20),
+    Phone VARCHAR(13) UNIQUE
+);
+```
+
+В данном случае столбец `Phone`, который представляет телефон клиента, может хранить только уникальные значения. И мы не сможем добавить в таблицу две строки, у которых значения для этого столбца будет совпадать.
+
+Также мы можем определить этот атрибут на уровне таблицы:
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT,
+    FirstName VARCHAR(20),
+    LastName VARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20),
+    UNIQUE(Email, Phone)
+);
+```
+
+### `NULL` и `NOT NULL`
+Чтобы указать, может ли столбец принимать значение `NULL`, при определении столбца ему можно задать атрибут **`NULL`** или **`NOT NULL`**. Если этот атрибут явным образом не будет использован, то по умолчанию столбец будет допускать значение `NULL`. Исключением является тот случай, когда столбец выступает в роли первичного ключа — в этом случае по умолчанию столбец имеет значение `NOT NULL`.
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    Email VARCHAR(30) NULL,
+    Phone VARCHAR(20) NULL
+);
+```
+
+В данном случае столбец `Age` по умолчанию будет иметь атрибут `NULL`.
+
+### `DEFAULT`
+Атрибут **`DEFAULT`** определяет значение по умолчанию для столбца. Если при добавлении данных для столбца не будет предусмотрено значение, то для него будет использоваться значение по умолчанию.
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT DEFAULT 18,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    Email VARCHAR(30) NOT NULL UNIQUE,
+    Phone VARCHAR(20) NOT NULL UNIQUE
+);
+```
+
+Здесь столбец `Age` в качестве значения по умолчанию имеет число 18.
+
+### `CHECK`
+Атрибут **`CHECK`** задает ограничение для диапазона значений, которые могут храниться в столбце. Для этого после `CHECK` указывается в скобках условие, которому должен соответствовать столбец или несколько столбцов. Например, возраст клиентов не может быть меньше 0 или больше 100:
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT AUTO_INCREMENT,
+    Age INT DEFAULT 18 CHECK(Age >0 AND Age < 100),
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    Email VARCHAR(30) CHECK(Email !=''),
+    Phone VARCHAR(20) CHECK(Phone !='')
+);
+```
