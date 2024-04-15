@@ -25,6 +25,7 @@
   - [`NULL` и `NOT NULL`](#null-и-not-null)
   - [`DEFAULT`](#default)
   - [`CHECK`](#check)
+- [Изменение данных](#изменение-данных)
 
 
 ## Основные команды
@@ -374,6 +375,27 @@ CREATE TABLE Customers
     Phone VARCHAR(20) CHECK(Phone !='')
 );
 ```
+
+Кроме проверки возраста здесь также проверяется, что столбцы `Email` и `Phone` не могут иметь пустую строку в качестве значения (пустая строка не эквивалентна значению `NULL`).
+
+Для соединения условий используется ключевое слово `AND`. Условия можно задать в виде операций сравнения больше (`>`), меньше (`<`), не равно (`!=`).
+
+Также `CHECK` можно использовать на уровне таблицы:
+
+```sql
+CREATE TABLE Customers
+(
+    Id INT AUTO_INCREMENT,
+    Age INT DEFAULT 18,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    Email VARCHAR(30),
+    Phone VARCHAR(20),
+    CHECK((Age >0 AND Age<100) AND (Email !='') AND (Phone !=''))
+);
+```
+
+---
 
 ## Изменение данных
 

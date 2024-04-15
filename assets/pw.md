@@ -367,7 +367,7 @@ Query OK, 1 row affected (0.00 sec)
 ```
 mysql> CREATE TABLE comfort (
     _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(30) NOT NULL
+    type_name VARCHAR(30) NOT NULL CHECK(type_name != '')
 );
 Query OK, 0 rows affected (0.01 sec)
 ```
@@ -385,6 +385,7 @@ mysql> CREATE TABLE room (
     price DECIMAL(8, 2) NOT NULL,
     phone_number VARCHAR(10) NOT NULL UNIQUE,
     comfort_id INT UNSIGNED NOT NULL,
+    CONSTRAINT check_price CHECK(price > 0),
     CONSTRAINT check_phone CHECK(phone_number regexp '^[+][0-9]{8}$')
 );
 Query OK, 0 rows affected (0.01 sec)
@@ -484,6 +485,68 @@ mysql> CREATE TABLE checkin (
     client_id INT UNSIGNED NOT NULL
 );
 Query OK, 0 rows affected (0.01 sec)
+```
+
+</details>
+
+#### Проверка
+
+Вывод списка таблиц.
+
+```sql
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_hotel |
++-----------------+
+| client          |
+| client_discount |
+| comfort         |
+| discount        |
+| phone           |
+| reservation     |
+| room            |
++-----------------+
+7 rows in set (0.00 sec)
+```
+
+Проверка осуществляется выводом структур таблиц, вставкой пробных данных (валидных и невалидных) в созданные таблицы с выводом добавленных данных.
+
+<details>
+<summary><b>Комфортабельность</b></summary>
+
+```
+mysql> DESCRIBE comfort;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| _id       | int unsigned | NO   | PRI | NULL    | auto_increment |
+| type_name | varchar(30)  | NO   |     | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+
+mysql> INSERT INTO comfort (type_name)
+    VALUE ('Обычный');
+Query OK, 0 rows affected (0.00 sec)
+
+
+mysql> INSERT INTO comfort (type_name)
+    VALUE (NULL);
+ERROR 1048 (23000): Column 'type_name' cannot be null
+
+mysql> INSERT INTO comfort (type_name)
+    VALUE ('');
+ERROR 3819 (HY000): Check constraint 'comfort_chk_1' is violated.
+
+mysql> INSERT INTO comfort (type_name)
+    VALUE ('Lorem ipsum dolor sit amet, consectetur adipiscing elit');
+ERROR 1406 (22001): Data too long for column 'type_name' at row 1
+
+mysql> select * from comfort;
++-----+-----------+
+| _id | type_name |
++-----+-----------+
+|   1 | Обычный   |
++-----+-----------+
+1 row in set (0.00 sec)
 ```
 
 </details>
