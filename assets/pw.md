@@ -552,3 +552,117 @@ mysql> select * from comfort;
 </details>
 
 ### Итоговый алгоритм
+
+
+## Работа 4.O. «Разработка серверной части базы данных в СУБД MysQL. Изменение структуры таблиц»
+
+### Задание 4.1.2
+
+#### Цель работы
+- изучить основные положения теории баз данных, хранилищ данных, баз знаний;
+- изучить методы описания схем баз данных в современных СУБД;
+- сформировать умение создавать объекты баз данных в современных СУБД.
+
+#### Условия задач
+1) Cоздать таблицу с клиентами `clients (name varchar(20), age int, dolgnost vachar(15), dolgnost varchar(10))`.
+2) Вставить в таблицу два поля `telephon char(11)` и `Name varchar(30)`.
+3) Добавить уникальный индекс для поля `telephon` и простой индекс для поля `age`.
+4) Изменить тип поля `dolgnost` на `char(12)` в таблице `client`.
+5) Создать таблицу `ctrana(nazv_ctr varcar(10))`.
+6) Добавить ключевое поле `id_cint` в таблицу `clients` и ключевое поле `id_c` в таблицу `ctrana`.
+7) Добавить простой индекс для поля `age` и поставить его перед полем `name`.
+8) Изменить имя и размер текстового поля `nazv_ctr` на `nazv_country varchar(20)` в таблице `ctrana`.
+9) Переименовать поле `dolgnost` таблицы `clients` в post типа `varchar(15)`.
+10) Добавить в таблицу `clients` внешний ключ `id_d` c `ON UPDATE RESTRICT`.
+11) Удалить поле `dolgnost` из таблицы `clients`.
+12) Переименовать таблицу `ctrana` в `country`.
+
+#### Задача 1
+
+Cоздать таблицу с клиентами `clients (name varchar(20), age int, dolgnost vachar(15), dolgnost varchar(10))`.
+
+
+<details>
+<summary><b>Создание и активация базы данных</b></summary>
+
+```
+mysql> CREATE DATABASE mytest;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> USE mytest
+Database changed
+```
+
+</details>
+
+<details>
+<summary><b>Создание таблицы с клиентами</b></summary>
+
+```
+mysql> CREATE TABLE clients (name VARCHAR(20), age INT, dolgnost VARCHAR(15));
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> DESCRIBE clients;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| name     | varchar(20) | YES  |     | NULL    |       |
+| age      | int         | YES  |     | NULL    |       |
+| dolgnost | varchar(15) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+```
+
+</details>
+
+#### Задача 2
+
+<details>
+<summary><b>Вставка полей</b></summary>
+
+```
+mysql> ALTER TABLE clients ADD COLUMN telephon char(11);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE clients;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| name     | varchar(20) | YES  |     | NULL    |       |
+| age      | int         | YES  |     | NULL    |       |
+| dolgnost | varchar(15) | YES  |     | NULL    |       |
+| telephon | char(11)    | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+```
+
+</details>
+
+
+#### Задача 3
+
+<details>
+<summary><b>Добавление индексов</b></summary>
+
+```
+mysql> ALTER TABLE clients
+    -> ADD UNIQUE INDEX (telephon),
+    -> ADD INDEX (age)
+    -> ;
+Query OK, 0 rows affected (0.00 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE clients;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| name     | varchar(20) | YES  |     | NULL    |       |
+| age      | int         | YES  | MUL | NULL    |       |
+| dolgnost | varchar(15) | YES  |     | NULL    |       |
+| telephon | char(11)    | YES  | UNI | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+```
+
+</details>
