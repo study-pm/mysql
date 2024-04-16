@@ -16,6 +16,7 @@
 - [Вопросы к экзамену](#вопросы-к-экзамену)
 - [Банк заданий](#банк-заданий)
 - [Оформление практических работ](#оформление-практических-работ)
+- [Видеоуроки по MySQL](#видеоуроки-по-mysql)
 
 ## Порядок прохождения курса
 65f1ceccd048d37352721345
@@ -301,3 +302,8 @@
 
 ## Оформление практических работ
 661d3f81d048d373527217c3
+
+## Видеоуроки по MySQL
+661d9affd048d373527217d0
+
+[3. MySQL 8 - MySQL Workbench 8](https://www.youtube.com/watch?v=EMOKs8_l2WA) from [Курс MySQL 8](https://www.youtube.com/playlist?list=PLOQDek48BpZFeW02dfJM77FY4Fp5ilJ6n) channel [htmllab](https://www.youtube.com/@HtmllabRu)
