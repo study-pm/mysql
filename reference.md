@@ -9,9 +9,23 @@
   - [Работа с таблицами](#работа-с-таблицами)
     - [Показать таблицы](#показать-таблицы)
     - [Создание таблицы](#создание-таблицы)
+    - [Показать структуру](#показать-структуру)
     - [Переименование таблицы](#переименование-таблицы)
     - [Полное удаление данных (очистка таблицы)](#полное-удаление-данных-очистка-таблицы)
     - [Удаление таблицы](#удаление-таблицы)
+  - [Работа с полями/столбцами](#работа-с-полямистолбцами)
+    - [Показать столбцы (колонки)](#показать-столбцы-колонки)
+    - [Добавление столбцов/полей](#добавление-столбцовполей)
+    - [Изменение столбцов/полей](#изменение-столбцовполей)
+      - [Изменение значения по умолчанию: `ALTER COLUMN`](#изменение-значения-по-умолчанию-alter-column)
+      - [Изменение столбца с переименованием: `CHANGE COLUMN`](#изменение-столбца-с-переименованием-change-column)
+      - [Изменение типа столбца без переименования: `MODIFY COLUMN`](#изменение-типа-столбца-без-переименования-modify-column)
+    - [Удаление столбцов/полей](#удаление-столбцовполей)
+  - [Работа с внешними ключами](#работа-с-внешними-ключами)
+  - [Работа с индексами](#работа-с-индексами)
+    - [Отображение индексов](#отображение-индексов)
+    - [Добавление индекса](#добавление-индекса)
+    - [Удаление индекса](#удаление-индекса)
 - [Типы данных](#типы-данных)
   - [Символьные типы](#символьные-типы)
   - [Числовые типы](#числовые-типы)
@@ -25,7 +39,15 @@
   - [`NULL` и `NOT NULL`](#null-и-not-null)
   - [`DEFAULT`](#default)
   - [`CHECK`](#check)
-- [Изменение данных](#изменение-данных)
+  - [Оператор `CONSTRAINT`. Установка имени ограничений](#оператор-constraint-установка-имени-ограничений)
+- [Внешние ключи `FOREIGN KEY`](#внешние-ключи-foreign-key)
+  - [`ON DELETE` и `ON UPDATE`](#on-delete-и-on-update)
+  - [Каскадное удаление](#каскадное-удаление)
+  - [Установка `NULL`](#установка-null)
+- [Изменение таблиц и столбцов](#изменение-таблиц-и-столбцов)
+  - [Добавление нового столбца](#добавление-нового-столбца)
+  - [Удаление столбца](#удаление-столбца)
+  - [Изменение значения по умолчанию](#изменение-значения-по-умолчанию)
 
 
 ## Основные команды
@@ -78,10 +100,22 @@ CREATE TABLE название_таблицы
 )
 ```
 
+#### Показать структуру
+
+```sql
+DESCRIBE <название_таблицы>
+```
+
 #### Переименование таблицы
 
 ```sql
-RENAME TABLE <старое_название> TO <новое_название>;
+RENAME TABLE <старое_название> TO <новое_название>, <name1> TO <name2>, ...;
+```
+
+Or:
+
+```sql
+ALTER TABLE <старое_название> RENAME <новое_название>;
 ```
 
 #### Полное удаление данных (очистка таблицы)
@@ -94,6 +128,101 @@ TRUNCATE TABLE <название_таблицы>;
 
 ```sql
 DROP TABLE <название_таблицы>;
+```
+
+### Работа с полями/столбцами
+
+#### Показать столбцы (колонки)
+
+```sql
+SHOW COLUMNS FROM <название_таблицы>
+```
+
+#### Добавление столбцов/полей
+
+`ADD COLUMN` or simply `ADD`:
+
+```sql
+ALTER TABLE <table_name> 
+    ADD <column1_properties> [FIRST | AFTER],
+    ADD <column2_properties> [FIRST | AFTER],
+    ...
+    ;
+```
+
+```sql
+ALTER TABLE ctrana ADD id_c INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
+```
+
+#### Изменение столбцов/полей
+Базовый синтаксис:
+
+```sql
+ALTER TABLE <название_таблицы> 
+    ADD <название_столбца тип_данных_столбца [атрибуты_столбца]>, 
+    DROP COLUMN <название_столбца>,
+    MODIFY COLUMN <название_столбца тип_данных_столбца [атрибуты_столбца]>,
+    ALTER COLUMN <название_столбца> SET DEFAULT <значение_по_умолчанию>,
+    ADD [CONSTRAINT] <определение_ограничения>,
+    DROP [CONSTRAINT] <имя_ограничения>
+;
+```
+
+##### Изменение значения по умолчанию: `ALTER COLUMN`
+`ALTER` is used to set or remove the default value for a column. Example:
+```sql
+ALTER TABLE MyTable ALTER COLUMN foo SET DEFAULT 'bar';
+ALTER TABLE MyTable ALTER COLUMN foo DROP DEFAULT;
+```
+
+##### Изменение столбца с переименованием: `CHANGE COLUMN`
+`CHANGE` is used to rename a column, change its datatype, or move it within the schema. Example:
+```sql
+ALTER TABLE MyTable CHANGE COLUMN foo bar VARCHAR(32) NOT NULL FIRST;
+ALTER TABLE MyTable CHANGE COLUMN foo bar VARCHAR(32) NOT NULL AFTER baz;
+```
+
+##### Изменение типа столбца без переименования: `MODIFY COLUMN`
+Used to do everything CHANGE COLUMN can, but without renaming the column. Example:
+```sql
+ALTER TABLE MyTable MODIFY COLUMN foo VARCHAR(32) NOT NULL AFTER baz;
+```
+
+#### Удаление столбцов/полей
+
+```sql
+ALTER TABLE <table_name> DROP COLUMN <column1_name>, <column2_name>, ...;
+```
+
+### Работа с внешними ключами
+
+
+
+
+
+### Работа с индексами
+
+#### Отображение индексов
+```sql
+SHOW INDEX FROM <имя_вашей_таблицы>;
+```
+
+```sql
+SHOW INDEXES FROM <название_таблицы>
+```
+
+#### Добавление индекса
+```sql
+ALTER TABLE <название_таблицы> ADD [UNIQUE] INDEX (<название_столбца> [ASC | DESC])
+```
+
+```sql
+CREATE [UNIQUE] INDEX <index_name> ON <table_name> (<column_name [ASC | DESC]>,... )
+```
+
+#### Удаление индекса
+```sql
+DROP INDEX <название_индекса> ON <название таблицы>
 ```
 
 ## Типы данных
@@ -395,41 +524,147 @@ CREATE TABLE Customers
 );
 ```
 
----
-
-## Изменение данных
-
-```sql
-CREATE DATABASE productsdb;
-USE productsdb;
-```
+### Оператор `CONSTRAINT`. Установка имени ограничений
+С помощью ключевого слова **`CONSTRAINT`** можно задать имя для ограничений. Они указываются после ключевого слова `CONSTRAINT` перед атрибутами на уровне таблицы:
 
 ```sql
-CREATE TABLE customers (
-    IdC INT PRIMARY KEY AUTO_INCREMENT,
-    Age INT DEFAULT 18,
+CREATE TABLE Customers
+(
+    Id INT AUTO_INCREMENT,
+    Age INT,
     FirstName VARCHAR(20) NOT NULL,
     LastName VARCHAR(20) NOT NULL,
-    Email VARCHAR(30) NOT NULL UNIQUE,
-    Phone VARCHAR(20) NOT NULL UNIQUE
+    Email VARCHAR(30),
+    Phone VARCHAR(20) NOT NULL,
+    CONSTRAINT customers_pk PRIMARY KEY(Id),
+    CONSTRAINT customer_phone_uq UNIQUE(Phone),
+    CONSTRAINT customer_age_chk CHECK(Age >0 AND Age<100)
 );
 ```
 
+В данном случае ограничение для `PRIMARY KEY` называется `customers_pk`, для `UNIQUE` — `customer_phone_uq`, а для `CHECK` — `customer_age_chk`. Смысл установки имен ограничений заключается в том, что впоследствии через эти имена мы сможем управлять ограничениями — удалять или изменять их.
+
+Установить имя можно для ограничений `PRIMARY KEY`, `CHECK`, `UNIQUE`, а также `FOREIGN KEY`, который рассматриватся далее.
+
+## Внешние ключи `FOREIGN KEY`
+
+Внешние ключи позволяют установить связи между таблицами. Внешний ключ устанавливается для столбцов из зависимой, подчиненной таблицы, и указывает на один из столбцов из главной таблицы. Как правило, внешний ключ указывает на первичный ключ из связанной главной таблицы.
+
+Общий синтаксис установки внешнего ключа на уровне таблицы:
 ```sql
-ALTER TABLE Customers ADD Address VARCHAR(50) NULL;
+[CONSTRAINT имя_ограничения]
+FOREIGN KEY (столбец1, столбец2, ... столбецN)
+REFERENCES главная_таблица (столбец_главной_таблицы1, столбец_главной_таблицы2, ... столбец_главной_таблицыN)
+[ON DELETE действие]
+[ON UPDATE действие]
 ```
 
+Для создания ограничения внешнего ключа после **`FOREIGN KEY`** указывается столбец таблицы, который будет представляет внешний ключ. А после ключевого слова **`REFERENCES`** указывается имя связанной таблицы, а затем в скобках имя связанного столбца, на который будет указывать внешний ключ. После выражения **`REFERENCES`** идут выражения **`ON DELETE`** и **`ON UPDATE`**, которые задают действие при удалении и обновлении строки из главной таблицы соответственно.
+
+Например, определим две таблицы и свяжем их посредством внешнего ключа:
 ```sql
-ALTER TABLE Customers ADD Address VARCHAR(50) NULL FIRST;
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    Phone VARCHAR(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE Orders
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerId INT,
+    CreatedAt Date,
+    FOREIGN KEY (CustomerId)  REFERENCES Customers (Id)
+);
 ```
 
+В данном случае определены таблицы `Customers` и `Orders`. `Customers` является главной и представляет клиента. `Orders` является зависимой и представляет заказ, сделанный клиентом. Таблица `Orders` через столбец `CustomerId` связана с таблицей `Customers` и ее столбцом `Id`. То есть столбец `CustomerId` является внешним ключом, который указывает на столбец `Id` из таблицы `Customers`.
+
+С помощью оператора **`CONSTRAINT`** можно задать имя для ограничения внешнего ключа:
 ```sql
-CREATE TABLE Orders (
-IdO INT PRIMARY KEY AUTO_INCREMENT,
-CustomerId INT,
-CreatedAt DATE);
+CREATE TABLE Orders
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerId INT,
+    CreatedAt Date,
+    CONSTRAINT orders_custonmers_fk
+    FOREIGN KEY (CustomerId)  REFERENCES Customers (Id)
+);
 ```
 
+### `ON DELETE` и `ON UPDATE`
+С помощью выражений **`ON DELETE`** и **`ON UPDATE`** можно установить действия, которые выполняются соответственно при удалении и изменении связанной строки из главной таблицы. В качестве действия могут использоваться следующие опции:
+
+- **`CASCADE`**: автоматически удаляет или изменяет строки из зависимой таблицы при удалении или изменении связанных строк в главной таблице.
+
+- **`SET NULL`**: при удалении или обновлении связанной строки из главной таблицы устанавливает для столбца внешнего ключа значение **`NULL`**. (В этом случае столбец внешнего ключа должен поддерживать установку `NULL`)
+
+- **`RESTRICT`**: отклоняет удаление или изменение строк в главной таблице при наличии связанных строк в зависимой таблице.
+
+- **`NO ACTION`**: то же самое, что и `RESTRICT`.
+
+- **`SET DEFAULT`**: при удалении связанной строки из главной таблицы устанавливает для столбца внешнего ключа значение по умолчанию, которое задается с помощью атрибуты `DEFAULT`. Несмотря на то, что данная опция в принципе доступна, однако движок InnoDB не поддерживает данное выражение.
+
+### Каскадное удаление
+Каскадное удаление позволяет при удалении строки из главной таблицы автоматически удалить все связанные строки из зависимой таблицы. Для этого применяется опция **`CASCADE`**:
+
 ```sql
-ALTER TABLE Orders ADD FOREIGN KEY(CustomerId) REFERENCES Customers(IdC);
+CREATE TABLE Orders
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerId INT,
+    CreatedAt Date,
+    FOREIGN KEY (CustomerId) REFERENCES Customers (Id) ON DELETE CASCADE
+);
+```
+Подобным образом работает и выражение **`ON UPDATE CASCADE`**. При изменении значения первичного ключа автоматически изменится значение связанного с ним внешнего ключа. Однако поскольку первичные ключи изменяются очень редко, да и с принципе не рекомендуется использовать в качестве первичных ключей столбцы с изменяемыми значениями, то на практике выражение `ON UPDATE` используется редко.
+
+### Установка `NULL`
+При установки для внешнего ключа опции **`SET NULL`** необходимо, чтобы столбец внешнего ключа допускал значение `NULL`:
+```sql
+CREATE TABLE Orders
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerId INT,
+    CreatedAt Date,
+    FOREIGN KEY (CustomerId) REFERENCES Customers (Id) ON DELETE SET NULL
+);
+```
+
+## Изменение таблиц и столбцов
+Если таблица уже была ранее создана, и ее необходимо изменить, то для этого применяется команда **`ALTER TABLE`**. Ее сокращенный формальный синтаксис:
+```sql
+ALTER TABLE название_таблицы
+{ ADD название_столбца тип_данных_столбца [атрибуты_столбца] |
+  DROP COLUMN название_столбца |
+  MODIFY COLUMN название_столбца тип_данных_столбца [атрибуты_столбца] |
+  ALTER COLUMN название_столбца SET DEFAULT значение_по_умолчанию |
+  ADD [CONSTRAINT] определение_ограничения |
+  DROP [CONSTRAINT] имя_ограничения}
+```
+Вообще данная команда поддерживает гораздо больше опций и возможностей. Все их можно посмотреть в документации. Рассмотрим лишь основные сценарии, с которыми мы можем столкнуться.
+
+### Добавление нового столбца
+Добавим в таблицу `Customers` новый столбец `Address`:
+```sql
+ALTER TABLE Customers
+ADD Address VARCHAR(50) NULL;
+```
+В данном случае столбец `Address` имеет тип `VARCHAR` и для него определен атрибут `NULL`.
+
+### Удаление столбца
+Удалим столбец `Address` из таблицы `Customers`:
+```sql
+ALTER TABLE Customers
+DROP COLUMN Address;
+```
+
+### Изменение значения по умолчанию
+Установим в таблице `Customers` для столбца `Age` значение по умолчанию `22`:
+```sql
+ALTER TABLE Customers
+ALTER COLUMN Age SET DEFAULT 22;
 ```
