@@ -367,9 +367,24 @@ Query OK, 1 row affected (0.00 sec)
 ```
 mysql> CREATE TABLE comfort (
     _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(30) NOT NULL CHECK(type_name != '')
+    type_name VARCHAR(10) NOT NULL CHECK(type_name != '')
 );
 Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE comfort (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> type_name VARCHAR(10) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE comfort;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| _id       | int unsigned | NO   | PRI | NULL    | auto_increment |
+| type_name | varchar(10)  | NO   |     | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+2 rows in set (0.01 sec)
 ```
 
 </details>
@@ -389,6 +404,29 @@ mysql> CREATE TABLE room (
     CONSTRAINT check_phone CHECK(phone_number regexp '^[+][0-9]{8}$')
 );
 Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE room (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> number VARCHAR(10) NOT NULL UNIQUE,
+    -> capacity TINYINT UNSIGNED NOT NULL,
+    -> price DECIMAL(8, 2) NOT NULL,
+    -> phone_number VARCHAR(10) NOT NULL,
+    -> comfort_id INT UNSIGNED NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE room;
++--------------+------------------+------+-----+---------+----------------+
+| Field        | Type             | Null | Key | Default | Extra          |
++--------------+------------------+------+-----+---------+----------------+
+| _id          | int unsigned     | NO   | PRI | NULL    | auto_increment |
+| number       | varchar(10)      | NO   | UNI | NULL    |                |
+| capacity     | tinyint unsigned | NO   |     | NULL    |                |
+| price        | decimal(8,2)     | NO   |     | NULL    |                |
+| phone_number | varchar(10)      | NO   |     | NULL    |                |
+| comfort_id   | int unsigned     | NO   |     | NULL    |                |
++--------------+------------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
 ```
 
 </details>
@@ -399,16 +437,43 @@ Query OK, 0 rows affected (0.01 sec)
 ```
 mysql> CREATE TABLE client (
     _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    last_name VARCHAR(30) NOT NULL,
-    first_name VARCHAR(30) NOT NULL,
-    second_name VARCHAR(30) NOT NULL,
-    passport_number CHAR(12) NOT NULL UNIQUE,
+    last_name VARCHAR(20) NOT NULL,
+    first_name VARCHAR(20) NOT NULL,
+    second_name VARCHAR(20) NOT NULL,
+    passport_number CHAR(10) NOT NULL UNIQUE,
     birth_date DATE NOT NULL,
     address VARCHAR(100),
     comment TEXT,
     CONSTRAINT check_passport CHECK(passport_number regexp '^[+][0-9]{10}$')
 );
 Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE client (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> last_name VARCHAR(20) NOT NULL,
+    -> first_name VARCHAR(20) NOT NULL,
+    -> second_name VARCHAR(20) NOT NULL,
+    -> passport_number CHAR(10) NOT NULL,
+    -> birth_date DATE NOT NULL,
+    -> address VARCHAR(100),
+    -> comment TEXT
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE client;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| _id             | int unsigned | NO   | PRI | NULL    | auto_increment |
+| last_name       | varchar(20)  | NO   |     | NULL    |                |
+| first_name      | varchar(20)  | NO   |     | NULL    |                |
+| second_name     | varchar(20)  | NO   |     | NULL    |                |
+| passport_number | char(10)     | NO   |     | NULL    |                |
+| birth_date      | date         | NO   |     | NULL    |                |
+| address         | varchar(100) | YES  |     | NULL    |                |
+| comment         | text         | YES  |     | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+8 rows in set (0.00 sec)
 ```
 
 </details>
@@ -418,11 +483,21 @@ Query OK, 0 rows affected (0.01 sec)
 
 ```
 mysql> CREATE TABLE discount (
-    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    category_name VARCHAR(30) NOT NULL,
-    value DECIMAL(3,2) NOT NULL
-);
-Query OK, 0 rows affected (0.01 sec)
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> category_name VARCHAR(30) NOT NULL,
+    -> value DECIMAL(3,2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SHOW COLUMNS FROM discount;
++---------------+--------------+------+-----+---------+----------------+
+| Field         | Type         | Null | Key | Default | Extra          |
++---------------+--------------+------+-----+---------+----------------+
+| _id           | int unsigned | NO   | PRI | NULL    | auto_increment |
+| category_name | varchar(30)  | NO   |     | NULL    |                |
+| value         | decimal(3,2) | NO   |     | NULL    |                |
++---------------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
 ```
 
 </details>
@@ -432,11 +507,22 @@ Query OK, 0 rows affected (0.01 sec)
 
 ```
 mysql> CREATE TABLE client_discount (
-    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    client_id INT UNSIGNED NOT NULL,
-    discount_id INT UNSIGNED NOT NULL
-);
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> client_id INT UNSIGNED NOT NULL,
+    -> discount_id INT UNSIGNED NOT NULL
+    -> );
 Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE client_discount;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| _id         | int unsigned | NO   | PRI | NULL    | auto_increment |
+| client_id   | int unsigned | NO   |     | NULL    |                |
+| discount_id | int unsigned | NO   |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
 ```
 
 </details>
@@ -451,6 +537,24 @@ mysql> CREATE TABLE phone (
     client_id INT UNSIGNED NOT NULL
 );
 Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE phone (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> number CHAR(10) NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW COLUMNS FROM phone;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| _id       | int unsigned | NO   | PRI | NULL    | auto_increment |
+| number    | char(10)     | NO   |     | NULL    |                |
+| client_id | int unsigned | NO   |     | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
 ```
 
 </details>
@@ -460,14 +564,28 @@ Query OK, 0 rows affected (0.01 sec)
 
 ```
 mysql> CREATE TABLE reservation (
-    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    enter_date DATE NOT NULL,
-    leave_date DATE NOT NULL,
-    room_id INT UNSIGNED NOT NULL,
-    client_id INT UNSIGNED NOT NULL
-);
-Query OK, 0 rows affected (0.01 sec)
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -> enter_date DATE NOT NULL,
+    -> leave_date DATE NOT NULL,
+    -> room_id INT UNSIGNED NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> DESCRIBE reservation;
++------------+--------------+------+-----+-------------------+-------------------+
+| Field      | Type         | Null | Key | Default           | Extra             |
++------------+--------------+------+-----+-------------------+-------------------+
+| _id        | int unsigned | NO   | PRI | NULL              | auto_increment    |
+| date_ts    | timestamp    | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| enter_date | date         | NO   |     | NULL              |                   |
+| leave_date | date         | NO   |     | NULL              |                   |
+| room_id    | int unsigned | NO   |     | NULL              |                   |
+| client_id  | int unsigned | NO   |     | NULL              |                   |
++------------+--------------+------+-----+-------------------+-------------------+
+6 rows in set (0.00 sec)
+
 ```
 
 </details>
@@ -477,14 +595,28 @@ Query OK, 0 rows affected (0.01 sec)
 
 ```
 mysql> CREATE TABLE checkin (
-    _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    enter_date DATE NOT NULL,
-    leave_date DATE NOT NULL,
-    room_id INT UNSIGNED NOT NULL,
-    client_id INT UNSIGNED NOT NULL
-);
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -> enter_date DATE NOT NULL,
+    -> leave_date DATE NOT NULL,
+    -> room_id INT UNSIGNED NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL
+    -> );
 Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW COLUMNS FROM checkin;
++------------+--------------+------+-----+-------------------+-------------------+
+| Field      | Type         | Null | Key | Default           | Extra             |
++------------+--------------+------+-----+-------------------+-------------------+
+| _id        | int unsigned | NO   | PRI | NULL              | auto_increment    |
+| date_ts    | timestamp    | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| enter_date | date         | NO   |     | NULL              |                   |
+| leave_date | date         | NO   |     | NULL              |                   |
+| room_id    | int unsigned | NO   |     | NULL              |                   |
+| client_id  | int unsigned | NO   |     | NULL              |                   |
++------------+--------------+------+-----+-------------------+-------------------+
+6 rows in set (0.00 sec)
+
 ```
 
 </details>
@@ -599,6 +731,9 @@ Database changed
 <summary><b>Создание таблицы с клиентами</b></summary>
 
 ```
+mysql> CREATE TABLE clients (name varchar(20), age int, dolgnost vachar(15), dolgnost varchar(10));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'vachar(15), dolgnost varchar(10))' at line 1
+
 mysql> CREATE TABLE clients (name VARCHAR(20), age INT, dolgnost VARCHAR(15));
 Query OK, 0 rows affected (0.09 sec)
 
@@ -621,6 +756,9 @@ mysql> DESCRIBE clients;
 <summary><b>Вставка полей</b></summary>
 
 ```
+mysql> ALTER TABLE clients1 ADD COLUMN telephon char(11), ADD COLUMN Name varchar(30);
+ERROR 1060 (42S21): Duplicate column name 'Name'
+
 mysql> ALTER TABLE clients ADD COLUMN telephon char(11);
 Query OK, 0 rows affected (0.01 sec)
 Records: 0  Duplicates: 0  Warnings: 0
@@ -638,7 +776,6 @@ mysql> DESCRIBE clients;
 ```
 
 </details>
-
 
 #### Задача 3
 
@@ -663,6 +800,604 @@ mysql> DESCRIBE clients;
 | telephon | char(11)    | YES  | UNI | NULL    |       |
 +----------+-------------+------+-----+---------+-------+
 4 rows in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 4
+
+<details>
+<summary><b>Изменение типа поля</b></summary>
+
+```
+mysql> ALTER TABLE clients
+    -> MODIFY dolgnost CHAR(12)
+    -> ;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE clients;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| name     | varchar(20) | YES  |     | NULL    |       |
+| age      | int         | YES  | MUL | NULL    |       |
+| dolgnost | char(12)    | YES  |     | NULL    |       |
+| telephon | char(11)    | YES  | UNI | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 5
+
+<details>
+<summary><b>Создание таблицы `ctrana`</b></summary>
+
+```
+mysql> CREATE TABLE ctrana(nazv_ctr varchar(10));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE ctrana;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| nazv_ctr | varchar(10) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+1 row in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 6
+
+<details>
+<summary><b>Добавление ключевых полей</b></summary>
+
+```
+mysql> ALTER TABLE clients
+    -> ADD id_cint INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE clients;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id_cint  | int unsigned | NO   | PRI | NULL    | auto_increment |
+| name     | varchar(20)  | YES  |     | NULL    |                |
+| age      | int          | YES  | MUL | NULL    |                |
+| dolgnost | char(12)     | YES  |     | NULL    |                |
+| telephon | char(11)     | YES  | UNI | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.01 sec)
+
+mysql> ALTER TABLE ctrana
+    -> ADD id_c INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE ctrana;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id_c     | int unsigned | NO   | PRI | NULL    | auto_increment |
+| nazv_ctr | varchar(10)  | YES  |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 7
+
+<details>
+<summary><b>Добавление простого индекса</b></summary>
+
+```
+mysql> ALTER TABLE clients
+    -> ADD INDEX (age),
+    -> MODIFY COLUMN age INT AFTER id_cint
+    -> ;
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+mysql> DESCRIBE clients;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id_cint  | int unsigned | NO   | PRI | NULL    | auto_increment |
+| age      | int          | YES  | MUL | NULL    |                |
+| name     | varchar(20)  | YES  |     | NULL    |                |
+| dolgnost | char(12)     | YES  |     | NULL    |                |
+| telephon | char(11)     | YES  | UNI | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> SHOW INDEXES FROM clients;
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| clients |          0 | PRIMARY  |            1 | id_cint     | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| clients |          0 | telephon |            1 | telephon    | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
+| clients |          1 | age      |            1 | age         | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+3 rows in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 8
+
+<details>
+<summary><b>Изменение поля</b></summary>
+
+```
+mysql> ALTER TABLE ctrana CHANGE nazv_ctr nazv_country VARCHAR(20);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW COLUMNS FROM ctrana;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| id_c         | int unsigned | NO   | PRI | NULL    | auto_increment |
+| nazv_country | varchar(20)  | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 9
+
+<details>
+<summary><b>Изменение поля</b></summary>
+
+```
+mysql> ALTER TABLE clients CHANGE COLUMN dolgnost post VARCHAR(15);
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE clients;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id_cint  | int unsigned | NO   | PRI | NULL    | auto_increment |
+| age      | int          | YES  | MUL | NULL    |                |
+| name     | varchar(20)  | YES  |     | NULL    |                |
+| post     | varchar(15)  | YES  |     | NULL    |                |
+| telephon | char(11)     | YES  | UNI | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 10
+
+<details>
+<summary><b>Добавление внешнего ключа</b></summary>
+
+```
+mysql> ALTER TABLE clients
+    -> ADD id_d INT UNSIGNED,
+    -> ADD FOREIGN KEY (id_d) REFERENCES ctrana (id_c) ON UPDATE RESTRICT
+    -> ;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW CREATE TABLE clients;
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+
+                                                    |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| clients | CREATE TABLE `clients` (
+  `id_cint` int unsigned NOT NULL AUTO_INCREMENT,
+  `age` int DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `post` varchar(15) DEFAULT NULL,
+  `telephon` char(11) DEFAULT NULL,
+  `id_d` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`id_cint`),
+  UNIQUE KEY `telephon` (`telephon`),
+  KEY `age` (`age`),
+  KEY `id_d` (`id_d`),
+  CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`id_d`) REFERENCES `ctrana` (`id_c`) ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+</details>
+
+#### Задача 11
+
+<details>
+<summary><b>Удаление поля</b></summary>
+
+```
+mysql> > ALTER TABLE clients DROP dolgnost;
+ERROR 1091 (42000): Can't DROP 'dolgnost'; check that column/key exists
+mysql> ALTER TABLE clients DROP post;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW COLUMNS FROM clients;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id_cint  | int unsigned | NO   | PRI | NULL    | auto_increment |
+| age      | int          | YES  | MUL | NULL    |                |
+| name     | varchar(20)  | YES  |     | NULL    |                |
+| telephon | char(11)     | YES  | UNI | NULL    |                |
+| id_d     | int unsigned | YES  | MUL | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+```
+
+</details>
+
+#### Задача 12
+
+<details>
+<summary><b>Переименование таблицы</b></summary>
+
+```
+mysql> ALTER TABLE ctrana RENAME country;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW TABLES;
++------------------+
+| Tables_in_mytest |
++------------------+
+| clients          |
+| country          |
++------------------+
+2 rows in set (0.00 sec)
+```
+
+</details>
+
+## Работа 5.O. «Разработка серверной части базы данных в СУБД  MySQL. Создание индексов (простых, уникальных)»
+
+### Задание 5.1.2
+
+#### Цель работы
+- -	изучить cтруктуры данных СУБД, общий подход к организации представлений, таблиц, индексов и кластеров;
+-	сформировать умение создавать объекты баз данных в современных СУБД.
+
+#### Условия задач
+1) Создать простые и уникальные индексы для своих таблиц (не менее пяти).
+
+#### Задача 1
+
+<details>
+<summary><b>Создание уникального индекса для таблицы КОМФОРТАБЕЛЬНОСТЬ</b></summary>
+
+```
+mysql> CREATE UNIQUE INDEX type_name ON comfort (type_name);
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE hotel;
+ERROR 1146 (42S02): Table 'hotel.hotel' doesn't exist
+mysql> DESCRIBE comfort;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| _id       | int unsigned | NO   | PRI | NULL    | auto_increment |
+| type_name | varchar(10)  | NO   | UNI | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+mysql> SHOW CREATE TABLE comfort;
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+         |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| comfort | CREATE TABLE `comfort` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(10) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `type_name` (`type_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание уникального индекса для таблицы НОМЕРА</b></summary>
+
+```
+mysql> ALTER TABLE room ADD UNIQUE INDEX (phone_number);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE room;
++--------------+------------------+------+-----+---------+----------------+
+| Field        | Type             | Null | Key | Default | Extra          |
++--------------+------------------+------+-----+---------+----------------+
+| _id          | int unsigned     | NO   | PRI | NULL    | auto_increment |
+| number       | varchar(10)      | NO   | UNI | NULL    |                |
+| capacity     | tinyint unsigned | NO   |     | NULL    |                |
+| price        | decimal(8,2)     | NO   |     | NULL    |                |
+| phone_number | varchar(10)      | NO   | UNI | NULL    |                |
+| comfort_id   | int unsigned     | NO   |     | NULL    |                |
++--------------+------------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> SHOW CREATE TABLE room;
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+                                                                                                                                                                                               |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| room  | CREATE TABLE `room` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `number` varchar(10) NOT NULL,
+  `capacity` tinyint unsigned NOT NULL,
+  `price` decimal(8,2) NOT NULL,
+  `phone_number` varchar(10) NOT NULL,
+  `comfort_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `number` (`number`),
+  UNIQUE KEY `phone_number` (`phone_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+</details>
+
+<details>
+<summary><b>Создание уникального и обычного индекса для таблицы КЛИЕНТЫ</b></summary>
+
+```
+mysql> ALTER TABLE client
+    -> ADD INDEX (last_name),
+    -> ADD UNIQUE INDEX (passport_number)
+    -> ;
+Query OK, 0 rows affected (0.01 sec)                                           
+Records: 0  Duplicates: 0  Warnings: 0                                         
+                                                                               
+mysql> DESCRIBE client;                                                        
++-----------------+--------------+------+-----+---------+----------------+     
+| Field           | Type         | Null | Key | Default | Extra          |     
++-----------------+--------------+------+-----+---------+----------------+     
+| _id             | int unsigned | NO   | PRI | NULL    | auto_increment |     
+| last_name       | varchar(20)  | NO   | MUL | NULL    |                |     
+| first_name      | varchar(20)  | NO   |     | NULL    |                |     
+| second_name     | varchar(20)  | NO   |     | NULL    |                |     
+| passport_number | char(10)     | NO   | UNI | NULL    |                |     
+| birth_date      | date         | NO   |     | NULL    |                |     
+| address         | varchar(100) | YES  |     | NULL    |                |     
+| comment         | text         | YES  |     | NULL    |                |     
++-----------------+--------------+------+-----+---------+----------------+     
+8 rows in set (0.00 sec)                                                       
+                                                                               
+mysql> SHOW CREATE TABLE client;                                               
++--------+---------------------------------------------------------------------
+-------------------------------------------------------------------------------
+--------------+                                                                
+| Table  | Create Table                                                        
+                                                                               
+              |                                                                
++--------+---------------------------------------------------------------------
+-------------------------------------------------------------------------------
+--------------+                                                                
+| client | CREATE TABLE `client` (                                             
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,                                  
+  `last_name` varchar(20) NOT NULL,                                            
+  `first_name` varchar(20) NOT NULL,                                           
+  `second_name` varchar(20) NOT NULL,                                          
+  `passport_number` char(10) NOT NULL,                                         
+  `birth_date` date NOT NULL,                                                  
+  `address` varchar(100) DEFAULT NULL,                                         
+  `comment` text,                                                              
+  PRIMARY KEY (`_id`),                                                         
+  UNIQUE KEY `passport_number` (`passport_number`),                            
+  KEY `last_name` (`last_name`)                                                
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |           
++--------+---------------------------------------------------------------------
+-------------------------------------------------------------------------------
+--------------+                                                                
+1 row in set (0.00 sec)                                                        
+```
+
+</details>
+
+<details>
+<summary><b>Создание уникального индекса для таблицы СКИДКИ</b></summary>
+
+```
+mysql> ALTER TABLE discount ADD UNIQUE INDEX (category_name);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW COLUMNS FROM discount;
++---------------+--------------+------+-----+---------+----------------+
+| Field         | Type         | Null | Key | Default | Extra          |
++---------------+--------------+------+-----+---------+----------------+
+| _id           | int unsigned | NO   | PRI | NULL    | auto_increment |
+| category_name | varchar(30)  | NO   | UNI | NULL    |                |
+| value         | decimal(3,2) | NO   |     | NULL    |                |
++---------------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> SHOW CREATE TABLE discount;
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table
+                                                        |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| discount | CREATE TABLE `discount` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(30) NOT NULL,
+  `value` decimal(3,2) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `category_name` (`category_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание уникального индекса для таблицы ТЕЛЕФОНЫ</b></summary>
+
+```
+mysql> CREATE UNIQUE INDEX phone_number ON phone(number);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE phone;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| _id       | int unsigned | NO   | PRI | NULL    | auto_increment |
+| number    | char(10)     | NO   | UNI | NULL    |                |
+| client_id | int unsigned | NO   |     | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> SHOW CREATE TABLE phone;
++-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+                                    |
++-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| phone | CREATE TABLE `phone` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `number` char(10) NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `phone_number` (`number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание простых индексов для таблицы БРОНИ</b></summary>
+
+```
+mysql> CREATE INDEX enter_date ON reservation (enter_date DESC);
+Query OK, 0 rows affected (0.00 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX leave_date ON reservation (leave_date DESC);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE reservation;
++------------+--------------+------+-----+-------------------+-------------------+
+| Field      | Type         | Null | Key | Default           | Extra             |
++------------+--------------+------+-----+-------------------+-------------------+
+| _id        | int unsigned | NO   | PRI | NULL              | auto_increment    |
+| date_ts    | timestamp    | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| enter_date | date         | NO   | MUL | NULL              |                   |
+| leave_date | date         | NO   | MUL | NULL              |                   |
+| room_id    | int unsigned | NO   |     | NULL              |                   |
+| client_id  | int unsigned | NO   |     | NULL              |                   |
++------------+--------------+------+-----+-------------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> SHOW INDEXES FROM reservation;
++-------------+------------+------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table       | Non_unique | Key_name   | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------------+------------+------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| reservation |          0 | PRIMARY    |            1 | _id         | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| reservation |          1 | enter_date |            1 | enter_date  | D         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| reservation |          1 | leave_date |            1 | leave_date  | D         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++-------------+------------+------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+3 rows in set (0.00 sec)
+
+mysql> SHOW CREATE TABLE reservation;
++-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table       | Create Table
+                                                                                                                                                                                                                   |
++-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| reservation | CREATE TABLE `reservation` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `date_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enter_date` date NOT NULL,
+  `leave_date` date NOT NULL,
+  `room_id` int unsigned NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  KEY `enter_date` (`enter_date` DESC),
+  KEY `leave_date` (`leave_date` DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание простых индексов для таблицы ПОСЕЛЕНИЯ</b></summary>
+
+```
+mysql> ALTER TABLE  checkin
+    -> ADD INDEX (enter_date DESC),
+    -> ADD INDEX (leave_date DESC)
+    -> ;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW COLUMNS FROM checkin;
++------------+--------------+------+-----+-------------------+-------------------+
+| Field      | Type         | Null | Key | Default           | Extra             |
++------------+--------------+------+-----+-------------------+-------------------+
+| _id        | int unsigned | NO   | PRI | NULL              | auto_increment    |
+| date_ts    | timestamp    | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| enter_date | date         | NO   | MUL | NULL              |                   |
+| leave_date | date         | NO   | MUL | NULL              |                   |
+| room_id    | int unsigned | NO   |     | NULL              |                   |
+| client_id  | int unsigned | NO   |     | NULL              |                   |
++------------+--------------+------+-----+-------------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> SHOW INDEX FROM checkin;
++---------+------------+------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table   | Non_unique | Key_name   | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++---------+------------+------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| checkin |          0 | PRIMARY    |            1 | _id         | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| checkin |          1 | enter_date |            1 | enter_date  | D         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| checkin |          1 | leave_date |            1 | leave_date  | D         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++---------+------------+------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+3 rows in set (0.00 sec)
+
+
+mysql> SHOW CREATE TABLE checkin;
++---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+                                                                                                                                                                                                           |
++---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| checkin | CREATE TABLE `checkin` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `date_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enter_date` date NOT NULL,
+  `leave_date` date NOT NULL,
+  `room_id` int unsigned NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  KEY `enter_date` (`enter_date` DESC),
+  KEY `leave_date` (`leave_date` DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
 ```
 
 </details>
