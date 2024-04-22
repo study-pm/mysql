@@ -48,6 +48,8 @@
   - [Добавление нового столбца](#добавление-нового-столбца)
   - [Удаление столбца](#удаление-столбца)
   - [Изменение значения по умолчанию](#изменение-значения-по-умолчанию)
+  - [Изменение типа столбца](#изменение-типа-столбца)
+  - [Добавление и удаление внешнего ключа](#добавление-и-удаление-внешнего-ключа)
 
 
 ## Основные команды
@@ -138,6 +140,10 @@ DROP TABLE <название_таблицы>;
 SHOW COLUMNS FROM <название_таблицы>
 ```
 
+```sql
+SHOW COLUMNS IN <название_таблицы>
+```
+
 #### Добавление столбцов/полей
 
 `ADD COLUMN` or simply `ADD`:
@@ -196,7 +202,8 @@ ALTER TABLE <table_name> DROP COLUMN <column1_name>, <column2_name>, ...;
 
 ### Работа с внешними ключами
 
-
+ADD FOREIGN KEY
+ADD CONSTRAINT
 
 
 
@@ -211,9 +218,17 @@ SHOW INDEX FROM <имя_вашей_таблицы>;
 SHOW INDEXES FROM <название_таблицы>
 ```
 
+```sql
+SHOW INDEXES IN <название_таблицы>
+```
+
 #### Добавление индекса
 ```sql
-ALTER TABLE <название_таблицы> ADD [UNIQUE] INDEX (<название_столбца> [ASC | DESC])
+ALTER TABLE <название_таблицы> ADD [UNIQUE] INDEX [<название_индекса>] (<название_столбца> [ASC | DESC])
+```
+
+```sql
+ALTER TABLE <название_таблицы> ADD [UNIQUE] KEY [<название_индекса>] (<название_столбца> [ASC | DESC])
 ```
 
 ```sql
@@ -667,4 +682,48 @@ DROP COLUMN Address;
 ```sql
 ALTER TABLE Customers
 ALTER COLUMN Age SET DEFAULT 22;
+```
+
+### Изменение типа столбца
+Изменим в таблице `Customers` тип данных у столбца `FirstName` на `CHAR(100)` и установим для него атрибут `NULL`:
+```sql
+ALTER TABLE Customers
+MODIFY COLUMN FirstName CHAR(100) NULL;
+```
+
+### Добавление и удаление внешнего ключа
+Пусть изначально в базе данных будут добавлены две таблицы, никак не связанные:
+```sql
+CREATE TABLE Customers
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT, 
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL
+);
+CREATE TABLE Orders
+(
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerId INT,
+    CreatedAt Date
+);
+```
+
+Добавим ограничение внешнего ключа к столбцу `CustomerId` таблицы `Orders`:
+```sql
+ALTER TABLE Orders
+ADD FOREIGN KEY(CustomerId) REFERENCES Customers(Id);
+```
+
+При добавлении ограничений мы можем указать для них имя, используя оператор `CONSTRAINT`, после которого указывается имя ограничения:
+```sql
+ALTER TABLE Orders
+ADD CONSTRAINT orders_customers_fk 
+FOREIGN KEY(CustomerId) REFERENCES Customers(Id);
+```
+
+В данном случае ограничение внешнего ключа называется `orders_customers_fk`. Затем по этому имени мы можем удалить ограничение:
+```sql
+ALTER TABLE Orders
+DROP FOREIGN KEY orders_customers_fk;
 ```
