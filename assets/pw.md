@@ -2218,3 +2218,79 @@ mysql> SHOW CREATE TABLE phone;
 ```
 
 </details>
+
+<details>
+<summary><b>Удаление ограничений для таблицы БРОНИ</b></summary>
+
+```
+mysql> ALTER TABLE reservation
+    -> DROP CONSTRAINT reservation_ibfk_1,
+    -> DROP CONSTRAINT reservation_ibfk_2,
+    -> DROP CONSTRAINT reservation_date,
+    -> DROP CONSTRAINT reservation_ts,
+    -> DROP INDEX enter_date,
+    -> DROP INDEX leave_date,
+    -> DROP INDEX client_id,
+    -> DROP INDEX room_id
+    -> ;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW CREATE TABLE reservation;
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table       | Create Table
+                                                                                                                                   |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| reservation | CREATE TABLE `reservation` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `date_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enter_date` date NOT NULL,
+  `leave_date` date NOT NULL,
+  `room_id` int unsigned NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Удаление ограничений для таблицы ПОСЕЛЕНИЯ</b></summary>
+
+```
+mysql> ALTER TABLE checkin
+    -> DROP CONSTRAINT checkin_client_fk,
+    -> DROP CONSTRAINT checkin_room_fk,
+    -> DROP CONSTRAINT checkin_date,
+    -> DROP CONSTRAINT checkin_ts,
+    -> DROP INDEX enter_date,
+    -> DROP INDEX leave_date,
+    -> DROP INDEX checkin_client_fk,
+    -> DROP INDEX checkin_room_fk
+    -> ;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW CREATE TABLE checkin;
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+                                                                                                                           |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| checkin | CREATE TABLE `checkin` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `date_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enter_date` date NOT NULL,
+  `leave_date` date NOT NULL,
+  `room_id` int unsigned NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
