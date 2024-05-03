@@ -1458,6 +1458,35 @@ mysql> SHOW CREATE TABLE comfort;
 
 
 <details>
+<summary><b>Создание ограничения на уникальные индексы при создании таблицы КОМФОРТАБЕЛЬНОСТЬ</b></summary>
+
+```
+mysql> CREATE TABLE comfort (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> type_name VARCHAR(10) NOT NULL,
+    -> CONSTRAINT comfort_name_uq UNIQUE(type_name)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW CREATE TABLE comfort;
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+               |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| comfort | CREATE TABLE `comfort` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(10) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `comfort_name_uq` (`type_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
 <summary><b>Команда добавления ограничения уникальности</b></summary>
 
 ```
@@ -1489,6 +1518,37 @@ mysql> SHOW CREATE TABLE discount;
   UNIQUE KEY `category_name` (`category_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
 +----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание ограничения на уникальные индексы при создании таблицы СКИДКИ</b></summary>
+
+```
+mysql> CREATE TABLE discount (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> category_name VARCHAR(30) NOT NULL,
+    -> value DECIMAL(3,2) NOT NULL,
+    -> CONSTRAINT discount_category_uq UNIQUE(category_name)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW CREATE TABLE discount;
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table
+                                                               |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| discount | CREATE TABLE `discount` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(30) NOT NULL,
+  `value` decimal(3,2) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `discount_category_uq` (`category_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
 
 ```
@@ -1532,6 +1592,38 @@ mysql> SHOW CREATE TABLE phone;
 
 </details>
 
+
+<details>
+<summary><b>Создание ограничения на уникальные индексы при создании таблицы ТЕЛЕФОНЫ</b></summary>
+
+```
+mysql> CREATE TABLE phone (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> number CHAR(10) NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL,
+    -> CONSTRAINT phone_number_uq UNIQUE(number)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW CREATE TABLE phone;
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+                                       |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| phone | CREATE TABLE `phone` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `number` char(10) NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `phone_number_uq` (`number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
 ALTER TABLE `table_name`
     ADD UNIQUE KEY `index_name` (`column_name`);
 
@@ -1562,6 +1654,35 @@ mysql> SHOW CREATE TABLE comfort;
   CONSTRAINT `comfort_not_empty` CHECK ((`type_name` <> _cp866''))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
 +---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание ограничений на поля при создании таблицы КОМФОРТАБЕЛЬНОСТЬ</b></summary>
+
+```
+mysql> CREATE TABLE comfort (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> type_name VARCHAR(10) NOT NULL UNIQUE,
+    -> CONSTRAINT comfort_name_ne_chk CHECK(type_name <> ''));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW CREATE TABLE comfort;
++---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+                                                                               |
++---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| comfort | CREATE TABLE `comfort` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(10) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `type_name` (`type_name`),
+  CONSTRAINT `comfort_name_ne_chk` CHECK ((`type_name` <> _cp866''))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
 
 ```
@@ -1652,6 +1773,54 @@ mysql> SHOW CREATE TABLE client;
 </details>
 
 <details>
+<summary><b>Создание ограничений на поля при создании таблицы КЛИЕНТЫ</b></summary>
+
+```
+mysql> CREATE TABLE client (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> last_name VARCHAR(20) NOT NULL,
+    -> first_name VARCHAR(20) NOT NULL,
+    -> second_name VARCHAR(20) NOT NULL,
+    -> passport_number CHAR(10) NOT NULL UNIQUE,
+    -> birth_date DATE NOT NULL,
+    -> address VARCHAR(100),
+    -> comment TEXT,
+    -> CONSTRAINT client_name_ne CHECK(last_name != '' AND first_name != ''),
+    -> CONSTRAINT client_passport_ft CHECK(passport_number REGEXP '^[0-9]{10}$'),
+    -> CONSTRAINT client_birth_rg CHECK(birth_date > '1904-01-01')
+    -> );
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> SHOW CREATE TABLE client;
++--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table  | Create Table
+
+
+          |
++--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| client | CREATE TABLE `client` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `last_name` varchar(20) NOT NULL,
+  `first_name` varchar(20) NOT NULL,
+  `second_name` varchar(20) NOT NULL,
+  `passport_number` char(10) NOT NULL,
+  `birth_date` date NOT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `passport_number` (`passport_number`),
+  CONSTRAINT `client_birth_rg` CHECK ((`birth_date` > _cp866'1904-01-01')),
+  CONSTRAINT `client_name_ne` CHECK (((`last_name` <> _cp866'') and (`first_name` <> _cp866''))),
+  CONSTRAINT `client_passport_ft` CHECK (regexp_like(`passport_number`,_cp866'^[0-9]{10}$'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
 <summary><b>Установка ограничений на поля таблицы СКИДКИ</b></summary>
 
 ```
@@ -1680,6 +1849,41 @@ mysql> SHOW CREATE TABLE discount;
 1 row in set (0.00 sec)
 
 ```
+</details>
+
+<details>
+<summary><b>Создание ограничений на поля при создании таблицы СКИДКИ</b></summary>
+
+```
+mysql> CREATE TABLE discount (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> category_name VARCHAR(30) NOT NULL UNIQUE,
+    -> value DECIMAL(3,2) NOT NULL,
+    -> CONSTRAINT discount_category_ne CHECK(category_name <> ''),
+    -> CONSTRAINT discount_value_rg CHECK(value > 0)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW CREATE TABLE discount;
++----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table
+                                                                                                                                                                                           |
++----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| discount | CREATE TABLE `discount` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(30) NOT NULL,
+  `value` decimal(3,2) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `category_name` (`category_name`),
+  CONSTRAINT `discount_category_ne` CHECK ((`category_name` <> _cp866'')),
+  CONSTRAINT `discount_value_rg` CHECK ((`value` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
 
 </details>
 
@@ -1871,6 +2075,58 @@ mysql> SHOW CREATE TABLE room;
 </details>
 
 <details>
+<summary><b>Создание ограничений на внешние ключи при создании таблицы НОМЕРА</b></summary>
+
+```
+mysql> CREATE TABLE room (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> number VARCHAR(10) NOT NULL,
+    -> capacity TINYINT UNSIGNED NOT NULL,
+    -> price DECIMAL(8, 2) NOT NULL,
+    -> phone_number VARCHAR(10) NOT NULL,
+    -> comfort_id INT UNSIGNED NOT NULL,
+    -> CONSTRAINT room_number_uq UNIQUE(number),
+    -> CONSTRAINT room_number_ne CHECK(number <> ''),
+    -> CONSTRAINT room_capacity_rg CHECK(capacity > 0 AND capacity < 20),
+    -> CONSTRAINT room_price_rg CHECK(price > 0),
+    -> CONSTRAINT room_phone_uq UNIQUE(phone_number),
+    -> CONSTRAINT room_phone_pt CHECK(phone_number REGEXP '^[0-9]{1,10}$'),
+    -> CONSTRAINT room_comfort_fk FOREIGN KEY (comfort_id) REFERENCES comfort(_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> SHOW CREATE TABLE room;
++-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+
+
+                                                                                                                                                        |
++-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| room  | CREATE TABLE `room` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `number` varchar(10) NOT NULL,
+  `capacity` tinyint unsigned NOT NULL,
+  `price` decimal(8,2) NOT NULL,
+  `phone_number` varchar(10) NOT NULL,
+  `comfort_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `room_number_uq` (`number`),
+  UNIQUE KEY `room_phone_uq` (`phone_number`),
+  KEY `room_comfort_fk` (`comfort_id`),
+  CONSTRAINT `room_comfort_fk` FOREIGN KEY (`comfort_id`) REFERENCES `comfort` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `room_capacity_rg` CHECK (((`capacity` > 0) and (`capacity` < 20))),
+  CONSTRAINT `room_number_ne` CHECK ((`number` <> _cp866'')),
+  CONSTRAINT `room_phone_pt` CHECK (regexp_like(`phone_number`,_cp866'^[0-9]{1,10}$')),
+  CONSTRAINT `room_price_rg` CHECK ((`price` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
 <summary><b>Установка ограничений внешнего ключа для таблицы КЛИЕНТЫ_СКИДКИ</b></summary>
 
 ```
@@ -1905,6 +2161,42 @@ mysql> SHOW CREATE TABLE client_discount;
 </details>
 
 <details>
+<summary><b>Создание ограничений на внешние ключи при создании таблицы КЛИЕНТЫ_СКИДКИ</b></summary>
+
+```
+mysql> CREATE TABLE client_discount (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> client_id INT UNSIGNED NOT NULL,
+    -> discount_id INT UNSIGNED NOT NULL,
+    -> CONSTRAINT cd_client_fk FOREIGN KEY(client_id) REFERENCES client(_id) ON DELETE CASCADE,
+    -> CONSTRAINT cd_discount_fk FOREIGN KEY(discount_id) REFERENCES discount(_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SHOW CREATE TABLE client_discount;
++-----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table           | Create Table
+
+                                                                      |
++-----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| client_discount | CREATE TABLE `client_discount` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `client_id` int unsigned NOT NULL,
+  `discount_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  KEY `cd_client_fk` (`client_id`),
+  KEY `cd_discount_fk` (`discount_id`),
+  CONSTRAINT `cd_client_fk` FOREIGN KEY (`client_id`) REFERENCES `client` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `cd_discount_fk` FOREIGN KEY (`discount_id`) REFERENCES `discount` (`_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
 <summary><b>Установка ограничений внешнего ключа для таблицы КЛИЕНТЫ_СКИДКИ</b></summary>
 
 ```
@@ -1932,6 +2224,43 @@ mysql> SHOW CREATE TABLE phone;
   CONSTRAINT `phone_number` CHECK (regexp_like(`number`,_utf8mb4'^[0-9]{10}$'))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
 +-------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание ограничений на внешние ключи при создании таблицы ТЕЛЕФОНЫ</b></summary>
+
+```
+mysql> CREATE TABLE phone (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> number CHAR(10) NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL,
+    -> CONSTRAINT phone_number_uq UNIQUE(number),
+    -> CONSTRAINT phone_number_pt CHECK(number REGEXP '^[0-9]{10}$'),
+    -> CONSTRAINT phone_client_fk FOREIGN KEY(client_id) REFERENCES client(_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SHOW CREATE TABLE phone;
++-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+
+                         |
++-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| phone | CREATE TABLE `phone` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `number` char(10) NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `phone_number_uq` (`number`),
+  KEY `phone_client_fk` (`client_id`),
+  CONSTRAINT `phone_client_fk` FOREIGN KEY (`client_id`) REFERENCES `client` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `phone_number_pt` CHECK (regexp_like(`number`,_cp866'^[0-9]{10}$'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
 
 ```
@@ -1987,6 +2316,53 @@ mysql> SHOW CREATE TABLE reservation;
   CONSTRAINT `reservation_ts` CHECK ((`date_ts` > _cp866'2020-01-01 00:00:00'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
 +-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+<details>
+<summary><b>Создание ограничений на внешние ключи при создании таблицы БРОНИ</b></summary>
+
+```
+mysql> CREATE TABLE reservation (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -> enter_date DATE NOT NULL,
+    -> leave_date DATE NOT NULL,
+    -> room_id INT UNSIGNED NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL,
+    -> CONSTRAINT reservation_ts_rg CHECK(date_ts > '2020-01-01 00:00:00'),
+    -> CONSTRAINT reservation_date_chk CHECK(enter_date > '2020-01-01' && leave_date > enter_date),
+    -> CONSTRAINT reservation_room_fk FOREIGN KEY(room_id) REFERENCES room(_id) ON DELETE CASCADE,
+    -> CONSTRAINT reservation_client_fk FOREIGN KEY(client_id) REFERENCES client(_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected, 1 warning (0.10 sec)
+
+mysql> SHOW CREATE TABLE reservation;
++-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table       | Create Table
+
+
+                                                                                                                                                          |
++-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| reservation | CREATE TABLE `reservation` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `date_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enter_date` date NOT NULL,
+  `leave_date` date NOT NULL,
+  `room_id` int unsigned NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  KEY `reservation_room_fk` (`room_id`),
+  KEY `reservation_client_fk` (`client_id`),
+  CONSTRAINT `reservation_client_fk` FOREIGN KEY (`client_id`) REFERENCES `client` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `reservation_room_fk` FOREIGN KEY (`room_id`) REFERENCES `room` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `reservation_date_chk` CHECK (((`enter_date` > _cp866'2020-01-01') and (`leave_date` > `enter_date`))),
+  CONSTRAINT `reservation_ts_rg` CHECK ((`date_ts` > _cp866'2020-01-01 00:00:00'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
 
 ```
@@ -2050,24 +2426,72 @@ mysql> SHOW CREATE TABLE checkin;
 
 </details>
 
+<details>
+<summary><b>Создание ограничений на внешние ключи при создании таблицы БРОНИ</b></summary>
+
+```
+mysql> CREATE TABLE checkin (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> date_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -> enter_date DATE NOT NULL,
+    -> leave_date DATE NOT NULL,
+    -> room_id INT UNSIGNED NOT NULL,
+    -> client_id INT UNSIGNED NOT NULL,
+    -> CONSTRAINT checkin_ts_rg CHECK(date_ts > '2020-01-01 00:00:00'),
+    -> CONSTRAINT checkin_date_chk CHECK(enter_date > '2020-01-01' && leave_date > enter_date),
+    -> CONSTRAINT checkin_room_fk FOREIGN KEY(room_id) REFERENCES room(_id) ON DELETE CASCADE,
+    -> CONSTRAINT checkin_client_fk FOREIGN KEY(client_id) REFERENCES client(_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected, 1 warning (0.10 sec)
+
+mysql> SHOW CREATE TABLE checkin;
++---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+
+
+                                                                                                                          |
++---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| checkin | CREATE TABLE `checkin` (
+  `_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `date_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enter_date` date NOT NULL,
+  `leave_date` date NOT NULL,
+  `room_id` int unsigned NOT NULL,
+  `client_id` int unsigned NOT NULL,
+  PRIMARY KEY (`_id`),
+  KEY `checkin_room_fk` (`room_id`),
+  KEY `checkin_client_fk` (`client_id`),
+  CONSTRAINT `checkin_client_fk` FOREIGN KEY (`client_id`) REFERENCES `client` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `checkin_room_fk` FOREIGN KEY (`room_id`) REFERENCES `room` (`_id`) ON DELETE CASCADE,
+  CONSTRAINT `checkin_date_chk` CHECK (((`enter_date` > _cp866'2020-01-01') and (`leave_date` > `enter_date`))),
+  CONSTRAINT `checkin_ts_rg` CHECK ((`date_ts` > _cp866'2020-01-01 00:00:00'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+```
+
+</details>
+
+
 #### Задача 4
 
 <details>
 <summary><b>Удаление ограничений для таблицы КОМФОРТ</b></summary>
 
 ```
-mysql> ALTER TABLE comfort 
-    -> DROP CONSTRAINT comfort_not_empty,
+mysql> ALTER TABLE comfort
+    -> DROP CONSTRAINT comfort_name_ne_chk,
     -> DROP INDEX type_name
     -> ;
 Query OK, 0 rows affected (0.01 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
-mysql> SHOW CREATE TABLE COMFORT;
+mysql> SHOW CREATE TABLE comfort;
 +---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Table   | Create Table                                                                                                                                                                                        |
 +---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| COMFORT | CREATE TABLE `COMFORT` (
+| comfort | CREATE TABLE `comfort` (
   `_id` int unsigned NOT NULL AUTO_INCREMENT,
   `type_name` varchar(10) NOT NULL,
   PRIMARY KEY (`_id`)
@@ -2085,12 +2509,12 @@ mysql> SHOW CREATE TABLE COMFORT;
 ```
 mysql> ALTER TABLE room
     -> DROP CONSTRAINT room_comfort_fk,
-    -> DROP CONSTRAINT capacity_range,
-    -> DROP CONSTRAINT number_not_empty,
-    -> DROP CONSTRAINT phone_format,
-    -> DROP CONSTRAINT price_range,
-    -> DROP INDEX number,
-    -> DROP INDEX phone_number,
+    -> DROP CONSTRAINT room_capacity_rg,
+    -> DROP CONSTRAINT room_number_ne,
+    -> DROP CONSTRAINT room_phone_pt,
+    -> DROP CONSTRAINT room_price_rg,
+    -> DROP INDEX room_number_uq,
+    -> DROP INDEX room_phone_uq,
     -> DROP INDEX room_comfort_fk
     -> ;
 Query OK, 0 rows affected (0.01 sec)
@@ -2122,20 +2546,19 @@ mysql> SHOW CREATE TABLE room;
 
 ```
 mysql> ALTER TABLE client
-    -> DROP CONSTRAINT age_range,
-    -> DROP CONSTRAINT name_not_empty,
-    -> DROP CONSTRAINT passport_format,
-    -> DROP INDEX passport_number,
-    -> DROP INDEX last_name
+    -> DROP CONSTRAINT client_birth_rg,
+    -> DROP CONSTRAINT client_name_ne,
+    -> DROP CONSTRAINT client_passport_ft,
+    -> DROP INDEX passport_number
     -> ;
 Query OK, 0 rows affected (0.02 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> SHOW CREATE TABLE client;
-+--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Table  | Create Table
-                                                                                                                                                                                         |
-+--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+                                                                                                                                                                        |
++--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | client | CREATE TABLE `client` (
   `_id` int unsigned NOT NULL AUTO_INCREMENT,
   `last_name` varchar(20) NOT NULL,
@@ -2146,8 +2569,8 @@ mysql> SHOW CREATE TABLE client;
   `address` varchar(100) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
-+--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
 
 ```
@@ -2159,11 +2582,11 @@ mysql> SHOW CREATE TABLE client;
 
 ```
 mysql> ALTER TABLE discount
-    -> DROP CONSTRAINT category_not_empty,
-    -> DROP CONSTRAINT discount_value,
-    -> DROP INDEX category_name
+    -> DROP CONSTRAINT discount_category_ne,
+    -> DROP CONSTRAINT discount_value_rg,
+    -> DROP INDEX discount_category_uq
     -> ;
-Query OK, 0 rows affected (0.01 sec)
+Query OK, 0 rows affected (0.09 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> SHOW CREATE TABLE discount;
@@ -2190,30 +2613,25 @@ mysql> SHOW CREATE TABLE discount;
 ```
 mysql> ALTER TABLE phone
     -> DROP CONSTRAINT phone_client_fk,
-    -> DROP INDEX phone_number
+    -> DROP CONSTRAINT phone_number_pt,
+    -> DROP INDEX phone_number_uq,
+    -> DROP INDEX phone_client_fk
     -> ;
 Query OK, 0 rows affected (0.01 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
-mysql> ALTER TABLE phone DROP CONSTRAINT phone_number;
-Query OK, 0 rows affected (0.01 sec)
-Records: 0  Duplicates: 0  Warnings: 0
-
 mysql> SHOW CREATE TABLE phone;
-+-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Table | Create Table
-                                                    |
-+-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                                                                                     |
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | phone | CREATE TABLE `phone` (
   `_id` int unsigned NOT NULL AUTO_INCREMENT,
   `number` char(10) NOT NULL,
   `client_id` int unsigned NOT NULL,
-  PRIMARY KEY (`_id`),
-  KEY `phone_client_fk` (`client_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
-+-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  PRIMARY KEY (`_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
-
 
 ```
 
@@ -2224,16 +2642,14 @@ mysql> SHOW CREATE TABLE phone;
 
 ```
 mysql> ALTER TABLE reservation
-    -> DROP CONSTRAINT reservation_ibfk_1,
-    -> DROP CONSTRAINT reservation_ibfk_2,
-    -> DROP CONSTRAINT reservation_date,
-    -> DROP CONSTRAINT reservation_ts,
-    -> DROP INDEX enter_date,
-    -> DROP INDEX leave_date,
-    -> DROP INDEX client_id,
-    -> DROP INDEX room_id
+    -> DROP CONSTRAINT reservation_client_fk,
+    -> DROP CONSTRAINT reservation_room_fk,
+    -> DROP CONSTRAINT reservation_date_chk,
+    -> DROP CONSTRAINT reservation_ts_rg,
+    -> DROP INDEX reservation_client_fk,
+    -> DROP INDEX reservation_room_fk
     -> ;
-Query OK, 0 rows affected (0.01 sec)
+Query OK, 0 rows affected (0.00 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> SHOW CREATE TABLE reservation;
@@ -2264,10 +2680,8 @@ mysql> SHOW CREATE TABLE reservation;
 mysql> ALTER TABLE checkin
     -> DROP CONSTRAINT checkin_client_fk,
     -> DROP CONSTRAINT checkin_room_fk,
-    -> DROP CONSTRAINT checkin_date,
-    -> DROP CONSTRAINT checkin_ts,
-    -> DROP INDEX enter_date,
-    -> DROP INDEX leave_date,
+    -> DROP CONSTRAINT checkin_date_chk,
+    -> DROP CONSTRAINT checkin_ts_rg,
     -> DROP INDEX checkin_client_fk,
     -> DROP INDEX checkin_room_fk
     -> ;
