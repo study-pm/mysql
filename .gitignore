@@ -1,7 +1,9 @@
 /img
 /res
 *.accdb
+*.bak
 *.doc
 *.docx
 *.laccdb
+*.mwb
 *.pdf
