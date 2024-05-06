@@ -44,7 +44,7 @@ CREATE TABLE client (
 CREATE TABLE discount (
     _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(30) NOT NULL,
-    value DECIMAL(3,2) NOT NULL,
+    value DECIMAL(3,2) UNSIGNED NOT NULL,
     CONSTRAINT discount_category_uq UNIQUE(category_name),
     CONSTRAINT discount_category_ne CHECK(category_name <> ''),
     CONSTRAINT discount_value_rg CHECK(value > 0)
