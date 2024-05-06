@@ -2708,3 +2708,37 @@ mysql> SHOW CREATE TABLE checkin;
 ```
 
 </details>
+
+## Работа 7.O. «Создание базы данных в среде MySQL Workbench»
+
+```
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| hotel              |
+| information_schema |
+| mysql              |
+| mytest             |
+| performance_schema |
+| sys                |
++--------------------+
+6 rows in set (0.00 sec)
+
+mysql> USE hotel
+Database changed
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_hotel |
++-----------------+
+| checkin         |
+| client          |
+| client_discount |
+| comfort         |
+| discount        |
+| phone           |
+| reservation     |
+| room            |
++-----------------+
+8 rows in set (0.08 sec)
+```
