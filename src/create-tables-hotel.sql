@@ -79,7 +79,7 @@ CREATE TABLE reservation (
     client_id INT UNSIGNED NOT NULL,
     CONSTRAINT reservation_ts_rg CHECK(date_ts > '2020-01-01 00:00:00'),
     CONSTRAINT reservation_date_chk
-        CHECK(enter_date > '2020-01-01' && leave_date > enter_date),
+        CHECK(enter_date > '2000-01-01' && leave_date > enter_date),
     CONSTRAINT reservation_room_fk FOREIGN KEY(room_id)
         REFERENCES room(_id) ON DELETE CASCADE,
     CONSTRAINT reservation_client_fk FOREIGN KEY(client_id)
@@ -95,7 +95,7 @@ CREATE TABLE checkin (
     client_id INT UNSIGNED NOT NULL,
     CONSTRAINT checkin_ts_rg CHECK(date_ts > '2020-01-01 00:00:00'),
     CONSTRAINT checkin_date_chk
-        CHECK(enter_date > '2020-01-01' && leave_date > enter_date),
+        CHECK(enter_date > '2000-01-01' && leave_date > enter_date),
     CONSTRAINT checkin_room_fk FOREIGN KEY(room_id)
         REFERENCES room(_id) ON DELETE CASCADE,
     CONSTRAINT checkin_client_fk FOREIGN KEY(client_id)
