@@ -54,7 +54,8 @@ INSERT INTO room(number, capacity, price, phone_number, comfort_id) VALUES
     ('754', 2, 3225, '2048', 2),
     ('6', 6, 6000, '6', 3),
     ('65', 3, 2999, '4096', 1),
-    ('78', 3, 3134, '8192', 2)
+    ('78', 3, 3134, '8192', 2),
+    ('7', 1, 1700, '7', 1)
 ;
 
 INSERT INTO discount(category_name, value) VALUES
