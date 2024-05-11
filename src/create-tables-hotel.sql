@@ -31,6 +31,7 @@ CREATE TABLE client (
     last_name VARCHAR(20) NOT NULL,
     first_name VARCHAR(20) NOT NULL,
     second_name VARCHAR(20) NOT NULL,
+    sex ENUM('f', 'm') NOT NULL,
     passport_number CHAR(10) NOT NULL,
     birth_date DATE NOT NULL,
     address VARCHAR(100),
