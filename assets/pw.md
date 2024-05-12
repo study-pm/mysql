@@ -3018,17 +3018,19 @@ mysql> SELECT last_name AS "Фамилия", first_name AS "Имя", second_name
 ```
 </details>
 
-<details>
-<summary><b>Запрос с форматированием вывода</b></summary>
-
-```
+```sql
 SELECT 
   CONCAT(last_name, ' ', first_name, ' ', second_name) AS "ФИО", 
   CONCAT(SUBSTRING(passport_number, 1, 4), ' ', SUBSTRING(passport_number, 5)) AS "Номер паспорта*"
   FROM client
   ORDER BY passport_number DESC
 ;
+```
 
+<details>
+<summary><b>Запрос с форматированием вывода</b></summary>
+
+```
 mysql> SELECT
     -> CONCAT(last_name, ' ', first_name, ' ', second_name) AS "ФИО",
     -> CONCAT(SUBSTRING(passport_number, 1, 4), ' ', SUBSTRING(passport_number, 5)) AS "Номер паспорта*"
@@ -3072,16 +3074,18 @@ mysql> SELECT
 ### Задача 2
 Вывести две первые записи о номерах, в которых комфортность люкс.
 
-<details>
-<summary><b>Простой запрос</b></summary>
-
-```
+```sql
 SELECT * 
   FROM room
   WHERE comfort_id=3
   LIMIT 2
 ;
+```
 
+<details>
+<summary><b>Простой запрос</b></summary>
+
+```
 mysql> SELECT *
     -> FROM room
     -> WHERE comfort_id=3
@@ -3101,16 +3105,18 @@ mysql> SELECT *
 ### Задача 3
 Вывести три записи с кодами клиентов, которые поселились в апреле.
 
-<details>
-<summary><b>Простой запрос</b></summary>
-
-```
+```sql
 SELECT * 
   FROM checkin
   WHERE MONTH(enter_date)=4
   LIMIT 3
 ;
+```
 
+<details>
+<summary><b>Простой запрос</b></summary>
+
+```
 mysql> SELECT *
     -> FROM checkin
     -> WHERE MONTH(enter_date)=4
@@ -3168,15 +3174,17 @@ mysql> SELECT *
 ### Задача 5
 Вывести данные о номерах, в которых цена номера более 5000 и комфортность полулюкс.
 
-<details>
-<summary><b>Простой запрос</b></summary>
-
-```
+```sql
 SELECT * 
   FROM room
   WHERE price > 5000 AND comfort_id = 2
 ;
+```
 
+<details>
+<summary><b>Простой запрос</b></summary>
+
+```
 mysql> SELECT *
     -> FROM room
     -> WHERE price > 5000 AND comfort_id = 2
@@ -3194,15 +3202,17 @@ mysql> SELECT *
 ### Задача 6
 Вывести номера на двоих с обычной комфортностью и стоимостью не более 1000.
 
-<details>
-<summary><b>Простой запрос</b></summary>
-
-```
+```sql
 SELECT * 
   FROM room
   WHERE comfort_id = 1 AND price <= 1000
 ;
+```
 
+<details>
+<summary><b>Простой запрос</b></summary>
+
+```
 mysql> SELECT *
     -> FROM room
     -> WHERE comfort_id = 1 AND price <= 1000
@@ -3256,15 +3266,17 @@ mysql> SELECT *
 ### Задача 8
 Вывести данные о номерах, в которых количество человек в номере от 1 до 3, а цена менее 3500 руб
 
-<details>
-<summary><b>Простой запрос</b></summary>
-
-```
+```sql
 SELECT * 
   FROM room
   WHERE capacity BETWEEN 1 AND 3 && price < 3500
 ;
+```
 
+<details>
+<summary><b>Простой запрос</b></summary>
+
+```
 mysql> SELECT *
     -> FROM room
     -> WHERE capacity BETWEEN 1 AND 3 && price < 3500
@@ -4283,6 +4295,14 @@ mysql> SELECT
 
 ```sql
 SELECT
+  CONCAT(last_name, ' ', first_name, ' ', second_name) AS "Фамилия Имя Отчество",
+  birth_date AS "Дата рождения",
+  IF(MONTH(birth_date) = MONTH(CURDATE()) && DAY(birth_date) = DAY(CURDATE()),
+    '***Поздравляем с днем рождения!***', '') AS "Примечание"
+  FROM client
+;
+
+SELECT
   CONCAT(
     last_name, ' ', first_name, ' ', second_name, ', ', birth_date,
     IF(MONTH(birth_date) = MONTH(CURDATE()) && DAY(birth_date) = DAY(CURDATE()),
@@ -4296,6 +4316,47 @@ SELECT
 <summary><b>Запрос</b></summary>
 
 ```
+mysql> SELECT
+    -> CONCAT(last_name, ' ', first_name, ' ', second_name) AS "Фамилия Имя Отчество",
+    -> birth_date AS "Дата рождения",
+    -> IF(MONTH(birth_date) = MONTH(CURDATE()) && DAY(birth_date) = DAY(CURDATE()),
+    -> '***Поздравляем с днем рождения!***', '') AS "Примечание"
+    -> FROM client
+    -> ;
++-----------------------------------+---------------+------------------------------------+
+| Фамилия Имя Отчество              | Дата рождения | Примечание                         |
++-----------------------------------+---------------+------------------------------------+
+| Капралов Герман Петрович          | 1961-10-21    |                                    |
+| Сидоров Сидор Сидорович           | 1975-03-08    |                                    |
+| Иванов Иван Иванович              | 1985-02-16    |                                    |
+| Суворова Галина Ивановна          | 1975-04-03    |                                    |
+| Петров Степан Викторович          | 1965-08-21    |                                    |
+| Решетникова Анна Владимировна     | 1973-08-09    |                                    |
+| Ян Мария Григорьевна              | 1994-05-24    |                                    |
+| Агафонов Валерий Борисович        | 1941-03-10    |                                    |
+| Самохвалов Юрий Петрович          | 1952-02-22    |                                    |
+| Чижиков Михаил Николаевич         | 2001-07-14    |                                    |
+| Капралова Светлана Борисовна      | 1975-04-19    |                                    |
+| Лапина Марина Александровна       | 1988-03-17    |                                    |
+| Красавин Вадим Анатольевич        | 1985-03-30    |                                    |
+| Пень Юрий Васильевич              | 1949-01-01    |                                    |
+| Соловьев Владимир Рудовольфович   | 1963-10-20    |                                    |
+| Мединская Ирина Глебовна          | 2003-12-31    |                                    |
+| Агапова Софья Филипповна          | 1948-02-13    |                                    |
+| Соколов Михаил Иванович           | 1988-07-16    |                                    |
+| Рогов Александр Владимирович      | 1953-05-30    |                                    |
+| Васильев Александр Александрович  | 1958-08-12    |                                    |
+| Фролов Иван Павлович              | 1979-08-03    |                                    |
+| Ампилов Виктор Иванович           | 2005-10-02    |                                    |
+| Суриков Василий Петрович          | 1956-12-20    |                                    |
+| Матвиенко Александр Александрович | 1996-05-02    | ***Поздравляем с днем рождения!*** |
+| Фролова Анна Тарасовна            | 1997-07-19    |                                    |
+| Симонов Александр Михайлович      | 1974-11-15    |                                    |
+| Северов Нестор Петрович           | 1965-04-29    |                                    |
+| Просов Владимир Тимофеевич        | 1991-03-03    |                                    |
++-----------------------------------+---------------+------------------------------------+
+28 rows in set, 1 warning (0.00 sec)
+
 mysql> SELECT
     -> CONCAT(
     -> last_name, ' ', first_name, ' ', second_name, ', ', birth_date,
