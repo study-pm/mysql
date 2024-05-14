@@ -73,11 +73,21 @@
   - [Задача 7](#задача-7-3)
   - [Задача 8](#задача-8-3)
 - [Работа 12.O. «Создание запросов на выборку с использованием группировки данных»](#работа-12o-создание-запросов-на-выборку-с-использованием-группировки-данных)
+  - [Задача 1](#задача-1-6)
   - [Задача 2](#задача-2-5)
   - [Задача 3](#задача-3-5)
   - [Задача 4](#задача-4-5)
   - [Задача 5](#задача-5-4)
   - [Задача 6](#задача-6-4)
+- [Работа 13.O. «Создание запросов на объединение нескольких таблиц»](#работа-13o-создание-запросов-на-объединение-нескольких-таблиц)
+  - [Задача 1](#задача-1-7)
+  - [Задача 2](#задача-2-6)
+  - [Задача 3](#задача-3-6)
+  - [Задача 4](#задача-4-6)
+  - [Задача 5](#задача-5-5)
+  - [Задача 6](#задача-6-5)
+  - [Задача 7](#задача-7-4)
+  - [Задача 8](#задача-8-4)
 
 ## Работа 2.O. «Работа в консольном клиенте СУБД MySQL»
 
@@ -3909,6 +3919,7 @@ SELECT TIMESTAMPDIFF (YEAR, birth_date, CURDATE()) FROM client AS Age;
 <details>
 <summary><b>Запрос</b></summary>
 
+
 ```
 mysql> ALTER TABLE client
     -> ADD COLUMN sex ENUM('m', 'f') NOT NULL
@@ -3958,6 +3969,8 @@ mysql> select * from client;
 |  28 | Просов      | Владимир   | Тимофеевич    | m   | 1998653478      | 1991-03-03 | Мясницкий проезд, д. 4, стр. 1, г. Москва, 107078                                | NULL                                       |
 +-----+-------------+------------+---------------+-----+-----------------+------------+----------------------------------------------------------------------------------+--------------------------------------------+
 28 rows in set (0.00 sec)
+
+```
 
 </details>
 
@@ -4397,6 +4410,420 @@ mysql> SELECT
 | Просов Владимир Тимофеевич, 1991-03-03                                           |
 +----------------------------------------------------------------------------------+
 28 rows in set, 1 warning (0.00 sec)
+
+```
+</details>
+
+## Работа 13.O. «Создание запросов на объединение нескольких таблиц»
+
+### Задача 1
+Вывести ФИО клиентов, номер, в который он поселился и дату поселения. Сортировать по дате.
+
+```sql
+SELECT
+  client.last_name AS "Фамилия", client.first_name AS "Имя", client.second_name AS "Отчество",
+  room.number AS "Номер",
+  checkin.enter_date AS "Дата поселения*"
+  FROM client INNER JOIN
+    (room INNER JOIN checkin ON room._id = checkin.room_id)
+    ON client._id = checkin.client_id
+  ORDER BY checkin.enter_date DESC
+;
+
+SELECT
+  client.last_name AS "Фамилия", client.first_name AS "Имя", client.second_name AS "Отчество",
+  room.number AS "Номер",
+  checkin.enter_date AS "Дата поселения*"
+  FROM room JOIN
+    (client JOIN checkin ON client._id = checkin.client_id)
+    ON room._id = checkin.room_id
+  ORDER BY checkin.enter_date DESC
+;
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> client.last_name AS "Фамилия", client.first_name AS "Имя", client.second_name AS "Отчество",
+    -> room.number AS "Номер",
+    -> checkin.enter_date AS "Дата поселения*"
+    -> FROM client INNER JOIN
+    -> (room INNER JOIN checkin ON room._id = checkin.room_id)
+    -> ON client._id = checkin.client_id
+    -> ORDER BY checkin.enter_date DESC
+    -> ;
++-------------+-----------+---------------+-------+-----------------+
+| Фамилия     | Имя       | Отчество      | Номер | Дата поселения* |
++-------------+-----------+---------------+-------+-----------------+
+| Пень        | Юрий      | Васильевич    | 123   | 2024-04-05      |
+| Сидоров     | Сидор     | Сидорович     | 303   | 2023-12-28      |
+| Решетникова | Анна      | Владимировна  | 202   | 2023-12-12      |
+| Суриков     | Василий   | Петрович      | 754   | 2023-12-12      |
+| Суворова    | Галина    | Ивановна      | 225   | 2023-12-01      |
+| Самохвалов  | Юрий      | Петрович      | 5     | 2023-11-26      |
+| Капралова   | Светлана  | Борисовна     | 4     | 2023-11-19      |
+| Лапина      | Марина    | Александровна | 4     | 2023-11-17      |
+| Капралов    | Герман    | Петрович      | 213   | 2023-11-16      |
+| Чижиков     | Михаил    | Николаевич    | 213   | 2023-11-16      |
+| Красавин    | Вадим     | Анатольевич   | 303   | 2023-11-16      |
+| Иванов      | Иван      | Иванович      | 506   | 2023-11-14      |
+| Агапова     | Софья     | Филипповна    | 5     | 2023-04-30      |
+| Соловьев    | Владимир  | Рудовольфович | 101   | 2022-04-12      |
+| Мединская   | Ирина     | Глебовна      | 11    | 2021-04-01      |
+| Васильев    | Александр | Александрович | 707   | 2018-07-15      |
+| Соколов     | Михаил    | Иванович      | 123   | 2018-06-11      |
+| Ампилов     | Виктор    | Иванович      | 12    | 2018-04-01      |
+| Суриков     | Василий   | Петрович      | 128   | 2018-01-02      |
++-------------+-----------+---------------+-------+-----------------+
+19 rows in set (0.00 sec)
+
+```
+</details>
+
+### Задача 2
+Вывести номер, название комфортности, цену номера.
+
+```sql
+SELECT
+  room.number AS "Номер",
+  comfort.type_name AS "Комфортность",
+  room.price AS "Цена"
+  FROM comfort LEFT JOIN room
+    ON comfort._id = room.comfort_id
+;
+
+SELECT
+  room.number AS "Номер",
+  comfort.type_name AS "Комфортность",
+  room.price AS "Цена"
+  FROM room INNER JOIN comfort
+    ON comfort._id = room.comfort_id
+;
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> room.number AS "Номер",
+    -> comfort.type_name AS "Комфортность",
+    -> room.price AS "Цена"
+    -> FROM comfort LEFT JOIN room
+    -> ON comfort._id = room.comfort_id
+    -> ;
++-------+--------------+----------+
+| Номер | Комфортность | Цена     |
++-------+--------------+----------+
+| 506   | люкс         |  7800.00 |
+| 707   | люкс         | 10580.00 |
+| 555   | люкс         |  9230.00 |
+| 6     | люкс         |  6000.00 |
+| 45    | люкс         |  4500.00 |
+| 213   | обычный      |  2950.00 |
+| 225   | обычный      |  2100.00 |
+| 4     | обычный      |  4000.00 |
+| 202   | обычный      |  2500.00 |
+| 123   | обычный      |  3400.00 |
+| 101   | обычный      |  2950.00 |
+| 128   | обычный      |   999.00 |
+| 65    | обычный      |  2999.00 |
+| 12    | обычный      |  1250.00 |
+| 7     | обычный      |  1700.00 |
+| 303   | полулюкс     |  4320.00 |
+| 11    | полулюкс     |  7320.00 |
+| 5     | полулюкс     |  5000.00 |
+| 754   | полулюкс     |  3225.00 |
+| 78    | полулюкс     |  3134.00 |
+| 23    | полулюкс     |  2500.00 |
++-------+--------------+----------+
+21 rows in set (0.00 sec)
+
+```
+</details>
+
+### Задача 3
+Вывести данные по номерам 45, 23 и 12.
+
+```sql
+SELECT
+  room.number AS "Номер",
+  room.capacity AS "Вместимость",
+  room.price AS "Цена",
+  room.phone_number AS "Телефон",
+  comfort.type_name AS "Комфортность"
+  FROM comfort RIGHT JOIN room
+    ON comfort._id = room.comfort_id
+  WHERE room.number IN ('45', '23', '12')
+;
+
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> room.number AS "Номер",
+    -> room.capacity AS "Вместимость",
+    -> room.price AS "Цена",
+    -> room.phone_number AS "Телефон",
+    -> comfort.type_name AS "Комфортность"
+    -> FROM comfort RIGHT JOIN room
+    -> ON comfort._id = room.comfort_id
+    -> WHERE room.number IN ('45', '23', '12')
+    -> ;
++-------+-------------+---------+---------+--------------+
+| Номер | Вместимость | Цена    | Телефон | Комфортность |
++-------+-------------+---------+---------+--------------+
+| 12    |           1 | 1250.00 | 12      | обычный      |
+| 23    |           2 | 2500.00 | 23      | полулюкс     |
+| 45    |           4 | 4500.00 | 45      | люкс         |
++-------+-------------+---------+---------+--------------+
+3 rows in set (0.00 sec)
+
+```
+</details>
+
+### Задача 4
+Вывести номер, количество человек в номере, комфортность «1 категории» и «2 категории», в которых цена от 3000 руб. до 5000 руб.
+
+```sql
+SELECT
+  room.number AS "Номер",
+  room.capacity AS "Количество человек",
+  room.price AS "Цена",
+  comfort.type_name AS "Комфортность",
+  CASE
+    WHEN comfort._id = 1 THEN '1 категория'
+    WHEN comfort._id = 2 THEN '2 категория'
+    END AS "Категория"
+  FROM room LEFT JOIN comfort
+    ON comfort._id = room.comfort_id
+  WHERE room.price BETWEEN 3000 AND 5000 && comfort._id IN (1, 2)
+;
+
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> room.number AS "Номер",
+    -> room.capacity AS "Количество человек",
+    -> room.price AS "Цена",
+    -> comfort.type_name AS "Комфортность",
+    -> CASE
+    -> WHEN comfort._id = 1 THEN '1 категория'
+    -> WHEN comfort._id = 2 THEN '2 категория'
+    -> END AS "Категория"
+    -> FROM room LEFT JOIN comfort
+    -> ON comfort._id = room.comfort_id
+    -> WHERE room.price BETWEEN 3000 AND 5000 && comfort._id IN (1, 2)
+    -> ;
++-------+--------------------+---------+--------------+-------------+
+| Номер | Количество человек | Цена    | Комфортность | Категория   |
++-------+--------------------+---------+--------------+-------------+
+| 303   |                  2 | 4320.00 | полулюкс     | 2 категория |
+| 4     |                  4 | 4000.00 | обычный      | 1 категория |
+| 123   |                  3 | 3400.00 | обычный      | 1 категория |
+| 5     |                  5 | 5000.00 | полулюкс     | 2 категория |
+| 754   |                  2 | 3225.00 | полулюкс     | 2 категория |
+| 78    |                  3 | 3134.00 | полулюкс     | 2 категория |
++-------+--------------------+---------+--------------+-------------+
+6 rows in set, 1 warning (0.00 sec)
+
+
+```
+</details>
+
+### Задача 5
+Вывести ФИО клиентов, номер и дату освобождения номера с апреля 2018 по ноябрь 2018 г.
+
+```sql
+SELECT
+  client.last_name AS "Фамилия",
+  client.first_name AS "Имя",
+  client.second_name AS "Отчество",
+  room.number AS "Номер",
+  checkin.leave_date AS "Дата освобождения"
+  FROM room INNER JOIN
+    (client RIGHT JOIN checkin ON client._id = checkin.client_id)
+    ON room._id = checkin.room_id
+  WHERE checkin.leave_date BETWEEN '2018-04-01' AND '2018-11-30'
+  ORDER BY checkin.leave_date DESC
+;
+
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> client.last_name AS "Фамилия",
+    -> client.first_name AS "Имя",
+    -> client.second_name AS "Отчество",
+    -> room.number AS "Номер",
+    -> checkin.leave_date AS "Дата освобождения"
+    -> FROM room INNER JOIN
+    -> (client RIGHT JOIN checkin ON client._id = checkin.client_id)
+    -> ON room._id = checkin.room_id
+    -> WHERE checkin.leave_date BETWEEN '2018-04-01' AND '2018-11-30'
+    -> ORDER BY checkin.leave_date DESC
+    -> ;
++----------+-----------+---------------+-------+-------------------+
+| Фамилия  | Имя       | Отчество      | Номер | Дата освобождения |
++----------+-----------+---------------+-------+-------------------+
+| Васильев | Александр | Александрович | 707   | 2018-08-30        |
+| Соколов  | Михаил    | Иванович      | 123   | 2018-07-05        |
+| Суриков  | Василий   | Петрович      | 128   | 2018-04-28        |
+| Ампилов  | Виктор    | Иванович      | 12    | 2018-04-22        |
++----------+-----------+---------------+-------+-------------------+
+4 rows in set (0.00 sec)
+
+```
+</details>
+
+### Задача 6
+Вывести количество номеров по каждому виду комфортности.
+
+```sql
+SELECT
+  CONCAT(
+    UCASE(SUBSTRING(comfort.type_name, 1, 1)),
+    SUBSTRING(comfort.type_name, 2)
+  ) AS "Вид комфортности",
+  COUNT(*) AS "Количество номеров"
+  FROM room INNER JOIN comfort
+    ON comfort._id = room.comfort_id
+  GROUP BY room.comfort_id
+  ORDER BY room.comfort_id
+;
+
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> CONCAT(
+    -> UCASE(SUBSTRING(comfort.type_name, 1, 1)),
+    -> SUBSTRING(comfort.type_name, 2)
+    -> ) AS "Вид комфортности",
+    -> COUNT(*) AS "Количество номеров"
+    -> FROM room INNER JOIN comfort
+    -> ON comfort._id = room.comfort_id
+    -> GROUP BY room.comfort_id
+    -> ORDER BY room.comfort_id
+    -> ;
++------------------+--------------------+
+| Вид комфортности | Количество номеров |
++------------------+--------------------+
+| Обычный          |                 10 |
+| Полулюкс         |                  6 |
+| Люкс             |                  5 |
++------------------+--------------------+
+3 rows in set (0.02 sec)
+
+```
+</details>
+
+### Задача 7
+Вывести общее количество человек, которые были заселены в каждый номер в июне 2018 г.
+
+```sql
+SELECT
+  room.number AS "Номер",
+  COUNT(*) AS "Количество человек"
+  FROM room INNER JOIN checkin
+    ON room._id = checkin.room_id
+  WHERE MONTH(checkin.enter_date)=6 AND YEAR(checkin.enter_date)=2018
+  GROUP BY room._id  
+;
+
+SELECT
+  room.number AS "Номер",
+  COUNT(*) AS "Количество человек"
+  FROM room INNER JOIN checkin
+    ON room._id = checkin.room_id
+  WHERE checkin.enter_date BETWEEN "2018-06-01" AND "2018-06-30"
+  GROUP BY room._id
+;
+
+```
+
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> room.number AS "Номер",
+    -> COUNT(*) AS "Количество человек"
+    -> FROM room INNER JOIN checkin
+    -> ON room._id = checkin.room_id
+    -> WHERE checkin.enter_date BETWEEN "2018-06-01" AND "2018-06-30"
+    -> GROUP BY room._id
+    -> ;
++-------+--------------------+
+| Номер | Количество человек |
++-------+--------------------+
+| 123   |                  1 |
++-------+--------------------+
+1 row in set (0.00 sec)
+
+```
+</details>
+
+### Задача 8
+Вывести среднее значение суммы оплаты номера для каждого клиента, если она не превышает 5000 руб. и дата поселения с 14.02.2018 по 23.09.2018. Сортировать по фамилии.
+
+```sql
+SELECT
+  ROUND(AVG(room.price), 2) AS "Средняя оплата",
+  client.last_name AS "Фамилия*",
+  client.first_name AS "Имя",
+  client.second_name AS "Отчество"
+  FROM client INNER JOIN
+    (checkin LEFT JOIN room ON checkin.room_id = room._id)
+    ON client._id = checkin.client_id
+  WHERE checkin.enter_date BETWEEN "2018-02-14" AND "2018-09-23"
+  GROUP BY client.last_name, client.first_name, client.second_name
+  HAVING AVG(room.price) <= 5000
+  ORDER BY client.last_name
+;
+
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT
+    -> ROUND(AVG(room.price), 2) AS "Средняя оплата",
+    -> client.last_name AS "Фамилия",
+    -> client.first_name AS "Имя",
+    -> client.second_name AS "Отчество"
+    -> FROM client INNER JOIN
+    -> (checkin LEFT JOIN room ON checkin.room_id = room._id)
+    -> ON client._id = checkin.client_id
+    -> WHERE checkin.enter_date BETWEEN "2018-02-14" AND "2018-09-23"
+    -> GROUP BY client.last_name, client.first_name, client.second_name
+    -> HAVING AVG(room.price) <= 5000
+    -> ORDER BY client.last_name
+    -> ;
++----------------+----------+--------+----------+
+| Средняя оплата | Фамилия* | Имя    | Отчество |
++----------------+----------+--------+----------+
+|        1250.00 | Ампилов  | Виктор | Иванович |
+|        3400.00 | Соколов  | Михаил | Иванович |
++----------------+----------+--------+----------+
+2 rows in set (0.00 sec)
 
 ```
 </details>
