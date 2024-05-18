@@ -88,6 +88,10 @@
   - [Задача 6](#задача-6-5)
   - [Задача 7](#задача-7-4)
   - [Задача 8](#задача-8-4)
+- [Работа 14.O. «Создание запросов на объединение нескольких запросов»](#работа-14o-создание-запросов-на-объединение-нескольких-запросов)
+  - [Задача 1](#задача-1-8)
+  - [Задача 2](#задача-2-7)
+  - [Задача 3](#задача-3-7)
 
 ## Работа 2.O. «Работа в консольном клиенте СУБД MySQL»
 
@@ -4824,6 +4828,154 @@ mysql> SELECT
 |        3400.00 | Соколов  | Михаил | Иванович |
 +----------------+----------+--------+----------+
 2 rows in set (0.00 sec)
+
+```
+</details>
+
+
+## Работа 14.O. «Создание запросов на объединение нескольких запросов»
+
+```sql
+CREATE DATABASE store;
+
+USE store
+
+CREATE TABLE Vinil (
+  _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  price INT UNSIGNED NOT NULL
+);
+
+CREATE TABLE Paper (
+  _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  price INT UNSIGNED NOT NULL
+);
+
+INSERT INTO Vinil(price) VALUES (400), (500), (530), (610), (720), (800), (850);
+
+INSERT INTO Paper(price) VALUES (300), (320), (360), (400), (430), (500), (530);
+
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> CREATE DATABASE store;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> USE store
+Database changed
+mysql> CREATE TABLE Vinil (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> price INT UNSIGNED NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE Paper (
+    -> _id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> price INT UNSIGNED NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> INSERT INTO Vinil(price) VALUES (400), (500), (530), (610), (720), (800), (850);
+Query OK, 7 rows affected (0.00 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+```
+</details>
+
+### Задача 1
+Получить сведения о ценах обоев из таблицы Vinil, содержащей данные о виниловых обоях.
+
+```sql
+SELECT price FROM Vinil;
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT price FROM Vinil;
++-------+
+| price |
++-------+
+|   400 |
+|   500 |
+|   530 |
+|   610 |
+|   720 |
+|   800 |
+|   850 |
++-------+
+7 rows in set (0.01 sec)
+
+```
+</details>
+
+### Задача 2
+Получить сведения о ценах обоев из таблицы Paper, содержащей данные о бумажных обоях.
+
+```sql
+SELECT price FROM Paper;
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> SELECT price FROM Paper;
++-------+
+| price |
++-------+
+|   300 |
+|   320 |
+|   360 |
+|   400 |
+|   430 |
+|   500 |
+|   530 |
++-------+
+7 rows in set (0.00 sec)
+
+```
+</details>
+
+### Задача 3
+Написать запрос, позволяющий узнать сведения о ценах обоев из обеих вышеуказанных таблиц.
+
+```sql
+(SELECT price FROM Vinil)
+UNION
+(SELECT price FROM Paper)
+ORDER BY price
+;
+```
+
+<details>
+<summary><b>Запрос</b></summary>
+
+```
+mysql> (SELECT price FROM Vinil)
+    -> UNION
+    -> (SELECT price FROM Paper)
+    -> ORDER BY price
+    -> ;
++-------+
+| price |
++-------+
+|   300 |
+|   320 |
+|   360 |
+|   400 |
+|   430 |
+|   500 |
+|   530 |
+|   610 |
+|   720 |
+|   800 |
+|   850 |
++-------+
+11 rows in set (0.08 sec)
 
 ```
 </details>
