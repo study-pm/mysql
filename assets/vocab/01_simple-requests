@@ -1,0 +1,12 @@
+-- Вывести все части речи, упорядоченные по значению в возрастающем порядке
+SELECT value AS "Part of speech"
+    FROM pos
+    ORDER BY value
+;
+
+-- Вывести все лексемы с заполненным описание, упорядоченные по значению в возрастающем порядке
+SELECT value AS "Value", created_ts AS "Created", frequency_id AS "Frequency"
+    FROM lexeme
+    WHERE description IS NOT NULL
+    ORDER BY value
+;
