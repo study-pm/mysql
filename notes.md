@@ -1,3 +1,5 @@
+<link href="styles.css" rel="stylesheet" />
+
 # МДК.11.01 Технология разработки и защиты БД
 65f1ccf6d048d37352721344
 
