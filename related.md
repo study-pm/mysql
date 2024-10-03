@@ -8,3 +8,4 @@
 - [x] Мартишин С.А. Проектирование и реализация баз данных в СУБД MySQL с использованием MySQL Workbench. Методы и средства проектирования информационных систем и технологий. Инструментальные средства информационных систем: учеб. пособие / С.A. Мартишин, В.Л. Симонов, М.В. Храпченко. − М.: ИД «ФОРУМ»: ИНФРА-М, 2018. − 160 с. − (Среднее профессиональное образование). [Электронный ресурс]; режим доступа: URL: http://znanium.com/bookread2.php?book=967597
 - [ ] MySQL 8 - MySQL Workbench 8](https://www.youtube.com/watch?v=EMOKs8_l2WA) from [Курс MySQL 8](https://www.youtube.com/playlist?list=PLOQDek48BpZFeW02dfJM77FY4Fp5ilJ6n) channel [htmllab](https://www.youtube.com/@HtmllabRu)
 - [ ] [MySQL 8.0. Полное руководство](http://www.rldp.ru/mysql/mysql80/index.htm)
+- [ ] [What is a Database Model](https://www.lucidchart.com/pages/database-diagram/database-models)
