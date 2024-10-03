@@ -9,3 +9,4 @@
 - [ ] MySQL 8 - MySQL Workbench 8](https://www.youtube.com/watch?v=EMOKs8_l2WA) from [Курс MySQL 8](https://www.youtube.com/playlist?list=PLOQDek48BpZFeW02dfJM77FY4Fp5ilJ6n) channel [htmllab](https://www.youtube.com/@HtmllabRu)
 - [ ] [MySQL 8.0. Полное руководство](http://www.rldp.ru/mysql/mysql80/index.htm)
 - [ ] [What is a Database Model](https://www.lucidchart.com/pages/database-diagram/database-models)
+- [ ] [Вся правда о нормализации баз данных](https://www.youtube.com/watch?v=1GWx5CZdSCg)
