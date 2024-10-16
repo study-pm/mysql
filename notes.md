@@ -1,7 +1,7 @@
 <link href="styles.css" rel="stylesheet" />
 
 # МДК.11.01 Технология разработки и защиты БД
-65f1ccf6d048d37352721344
+[65f1ccf6d048d37352721344](https://e-learn.petrocollege.ru/course/view.php?id=6222)
 
 - [Общее](#общее)
   - [Порядок прохождения курса](#порядок-прохождения-курса)
