@@ -10,3 +10,4 @@
 - [ ] [MySQL 8.0. Полное руководство](http://www.rldp.ru/mysql/mysql80/index.htm)
 - [ ] [What is a Database Model](https://www.lucidchart.com/pages/database-diagram/database-models)
 - [ ] [Вся правда о нормализации баз данных](https://www.youtube.com/watch?v=1GWx5CZdSCg)
+- [ ] [SQL Academy](https://sql-academy.org/ru/guide/intro-intro)
