@@ -4781,6 +4781,8 @@ HDD на текущий момент используются только в к
 ## Тема 2.4 СУБД MySQL
 [671bf9255040133e8429e581](https://e-learn.petrocollege.ru/course/view.php?id=6222#section-12)
 
+**Д/з** [2.3] 14-17 [2.2 ]31-63
+
 ### Описание MySQL
 [671cc22e5040133e8429e584](https://e-learn.petrocollege.ru/mod/resource/view.php?id=282874)
 
