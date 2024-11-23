@@ -269,6 +269,7 @@
     - [2.Т Типовое задание](#2т-типовое-задание)
       - [Ход выполнения типового задания 2.Т](#ход-выполнения-типового-задания-2т)
     - [Задание 2.1.О](#задание-21о)
+  - [Командная строка MySQL](#командная-строка-mysql)
 
 ## Общее
 [67081d0d5040133e8429e3d6](https://e-learn.petrocollege.ru/course/view.php?id=6222#section-0)
@@ -5619,3 +5620,8 @@ DROP DATABASE [IF EXISTS] имя_базы_данных;
 | MySQL –u root   | Запустить консоль                  |
 | SHOW DATABASES; | Посмотреть имеющиеся БД на сервере |
 | USE имя_БД      | Выбрать базу данных                |
+
+### Командная строка MySQL
+[6740b8915040133e8429e6c0](https://e-learn.petrocollege.ru/mod/url/view.php?id=282889)
+
+http://cccp-blog.com/razrabotchiku/mysql-komandnaya-stroka
