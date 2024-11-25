@@ -286,6 +286,16 @@
       - [Операторы определения данных (язык DDL)](#операторы-определения-данных-язык-ddl)
       - [Операторы манипулирования данными (язык DML)](#операторы-манипулирования-данными-язык-dml)
       - [Синтаксис оператора `SELECT`](#синтаксис-оператора-select)
+  - [Базовый синтаксис SQL-запроса](#базовый-синтаксис-sql-запроса)
+    - [Вывод произвольных значений](#вывод-произвольных-значений)
+    - [Вывод всех данных из таблицы](#вывод-всех-данных-из-таблицы)
+    - [Вывод данных из определённых колонок таблицы](#вывод-данных-из-определённых-колонок-таблицы)
+    - [Псевдонимы](#псевдонимы)
+    - [Задания для самопроверки](#задания-для-самопроверки)
+      - [1. Вывод строки](#1-вывод-строки)
+      - [2. `SELECT` по всем столбцам](#2-select-по-всем-столбцам)
+      - [3. `SELECT` по нескольким столбцам](#3-select-по-нескольким-столбцам)
+      - [4. Вывод с псевдонимами](#4-вывод-с-псевдонимами)
 
 ## Общее
 [67081d0d5040133e8429e3d6](https://e-learn.petrocollege.ru/course/view.php?id=6222#section-0)
@@ -5846,3 +5856,166 @@ FROM  <список таблиц>
 ```
 
 В квадратных скобках указываются элементы, которые могут в запросе отсутствовать.
+
+### Базовый синтаксис SQL-запроса
+[674495b25040133e8429e6f0](https://e-learn.petrocollege.ru/mod/url/view.php?id=282897)
+
+https://sql-academy.org/ru/guide/basic-syntax-sql-query
+
+Одна из основных функций SQL — это получение выборок данных из СУБД. Для этого в SQL используется оператор `SELECT`. Давайте рассмотрим несколько простых запросов с его участием.
+
+#### Вывод произвольных значений
+Для начала важно понимать, что через оператор `SELECT` можно выводить данные не только из таблиц базы данных, но и произвольные строки, числа, даты и т.д. Например, так можно вывести произвольную строку:
+```sql
+SELECT "Hello world"
+```
+
+#### Вывод всех данных из таблицы
+Для вывода всех полей из определённой таблицы используется символ `*`. Давайте взглянем на схему базы данных и выведем данные одной из таблиц.
+
+![FamilyMembers db](./img/FamilyMembers_db.png)
+
+```sql
+SELECT * FROM FamilyMembers
+```
+
+```
+| member_id | status   | member_name       | birthday                 |
+| --------- | -------- | ----------------- | ------------------------ |
+| 1         | father   | Headley Quincey   | 1960-05-13T00:00:00.000Z |
+| 2         | mother   | Flavia Quincey    | 1963-02-16T00:00:00.000Z |
+| 3         | son      | Andie Quincey     | 1983-06-05T00:00:00.000Z |
+| 4         | daughter | Lela Quincey      | 1985-06-07T00:00:00.000Z |
+| 5         | daughter | Annie Quincey     | 1988-04-10T00:00:00.000Z |
+| 6         | father   | Ernest Forrest    | 1961-09-11T00:00:00.000Z |
+| 7         | mother   | Constance Forrest | 1968-09-06T00:00:00.000Z |
+```
+
+#### Вывод данных из определённых колонок таблицы
+Если необходимо вывести информацию только по определённым столбцам таблицы, а не всю сразу, то это можно сделать перечисляя названия столбцов через запятую:
+```sql
+SELECT member_id, member_name FROM FamilyMembers
+```
+
+```
+| member_id | member_name       |
+| --------- | ----------------- |
+| 1         | Headley Quincey   |
+| 2         | Flavia Quincey    |
+| 3         | Andie Quincey     |
+| 4         | Lela Quincey      |
+| 5         | Annie Quincey     |
+| 6         | Ernest Forrest    |
+| 7         | Constance Forrest |
+```
+
+#### Псевдонимы
+В случае, если мы хотим вывести какие-то столбцы таблицы, но чтобы в итоговой выборке они были названы иначе, мы можем использовать псевдонимы (их также называют алиасами).
+
+Их синтаксис достаточно простой, мы должны использовать оператор `AS`. Как в примере ниже:
+```sql
+SELECT member_id, member_name AS Name FROM FamilyMembers
+```
+
+```
+| member_id | Name              |
+| --------- | ----------------- |
+| 1         | Headley Quincey   |
+| 2         | Flavia Quincey    |
+| 3         | Andie Quincey     |
+| 4         | Lela Quincey      |
+| 5         | Annie Quincey     |
+| 6         | Ernest Forrest    |
+| 7         | Constance Forrest |
+```
+
+Или же можно обойтись и без него, просто написав желаемое наименование поля через пробел.
+
+```sql
+SELECT member_id, member_name Name FROM FamilyMembers
+```
+
+> Псевдонимы могут содержать до 255 знаков (включая пробелы, цифры и специальные символы)
+
+#### Задания для самопроверки
+
+##### 1. Вывод строки
+С помощью оператора `SELECT` выведите текст "Hello world"
+
+```sql
+SELECT "Hello world";
+```
+
+<details>
+<summary><em>Result</em></summary>
+
+| Hello world |
+| --- |
+| Hello world |
+
+</details>
+
+##### 2. `SELECT` по всем столбцам
+Выведите все столбцы из таблицы `Payments`.
+
+```sql
+SELECT * FROM Payments;
+```
+
+<details>
+<summary><em>Result</em></summary>
+
+| payment_id | date                     | family_member | good | amount | unit_price |
+| ---------- | ------------------------ | ------------- | ---- | ------ | ---------- |
+| 1          | 2005-02-12T00:00:00.000Z | 1             | 1    | 1      | 2000       |
+| 2          | 2005-03-23T00:00:00.000Z | 2             | 1    | 1      | 2100       |
+| 3          | 2005-05-14T00:00:00.000Z | 3             | 4    | 5      | 20         |
+| 4          | 2005-07-22T00:00:00.000Z | 4             | 5    | 1      | 350        |
+| 5          | 2005-07-26T00:00:00.000Z | 4             | 7    | 2      | 150        |
+| 6          | 2005-02-20T00:00:00.000Z | 5             | 6    | 1      | 100        |
+
+</details>
+
+##### 3. `SELECT` по нескольким столбцам
+Выведите поля `member_id`, `member_name` и `status` из таблицы `FamilyMembers`.
+
+```sql
+SELECT member_id, member_name, status FROM FamilyMembers;
+```
+
+<details>
+<summary><em>Result</em></summary>
+
+| member_id | member_name       | status   |
+| --------- | ----------------- | -------- |
+| 1         | Headley Quincey   | father   |
+| 2         | Flavia Quincey    | mother   |
+| 3         | Andie Quincey     | son      |
+| 4         | Lela Quincey      | daughter |
+| 5         | Annie Quincey     | daughter |
+| 6         | Ernest Forrest    | father   |
+| 7         | Constance Forrest | mother   |
+| 8         | Wednesday Addams  | daughter |
+
+</details>
+
+##### 4. Вывод с псевдонимами
+Выведите поле `name` из таблицы `Passenger`. При выводе данного поля используйте псевдоним "passengerName".
+
+```sql
+SELECT name passengerName FROM Passenger;
+```
+
+<details>
+<summary><em>Result</em></summary>
+
+| passengerName |
+| --- |
+| Bruce Willis |
+| George Clooney |
+| Kevin Costner |
+| Donald Sutherland |
+| Jennifer Lopez |
+| Ray Liotta |
+
+</details>
