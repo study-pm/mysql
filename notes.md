@@ -328,6 +328,13 @@
     - [Ход выполнения типового задания 3.Т](#ход-выполнения-типового-задания-3т)
     - [Задание 3.1.О](#задание-31о)
 - [Тема 2.8 Изменение структуры таблицы](#тема-28-изменение-структуры-таблицы)
+  - [Изменение таблиц и столбцов](#изменение-таблиц-и-столбцов)
+  - [Добавление нового столбца](#добавление-нового-столбца)
+  - [Удаление столбца](#удаление-столбца)
+  - [Изменение значения по умолчанию](#изменение-значения-по-умолчанию)
+  - [Изменение типа столбца](#изменение-типа-столбца)
+  - [Добавление и удаление внешнего ключа](#добавление-и-удаление-внешнего-ключа)
+  - [Добавление и удаление первичного ключа](#добавление-и-удаление-первичного-ключа)
 
 ## Общее
 [67081d0d5040133e8429e3d6](https://e-learn.petrocollege.ru/course/view.php?id=6222#section-0)
@@ -6473,3 +6480,140 @@ CREATE TABLE Product (
 
 ## Тема 2.8 Изменение структуры таблицы
 [6728ec755040133e8429e5d0](https://e-learn.petrocollege.ru/course/view.php?id=6222#section-16)
+
+### Изменение таблиц и столбцов
+Если таблица уже была ранее создана, и ее необходимо изменить, то для этого применяется команда **`ALTER TABLE`**. Ее сокращенный формальный синтаксис:
+```sql
+ALTER TABLE название_таблицы
+{ ADD название_столбца тип_данных_столбца [атрибуты_столбца] |
+  DROP COLUMN название_столбца |
+  MODIFY COLUMN название_столбца тип_данных_столбца [атрибуты_столбца]
+ ALTER COLUMN название_столбца SET DEFAULT значение_по_умолчанию |
+  ADD [CONSTRAINT] определение_ограничения |
+  DROP [CONSTRAINT] имя_ограничения}
+```
+
+### Добавление нового столбца
+Добавим в таблицу `Customers` новый столбец `Address`:
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL;
+```
+
+В данном случае столбец `Address` имеет тип `VARCHAR` и для него определен атрибут `NULL`.
+
+Новый столбец `Address` будет добавлен по умолчанию в конец таблицы. Чтобы столбец оказался в начале таблицы необходимо добавить ещё один ключевой параметр — **`FIRST`**.
+
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL FIRST;
+```
+
+После выполнения команды в таблицу будет добавлен новый столбец в начало таблицы.
+
+Если нужно разместить столбец таблицы не в начале и не в конце, а после определенного столбца, то следует добавить параметр **`AFTER`** с указанием столбца после которого будет размещен новый столбец.
+
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL AFTER LastName;
+```
+
+Есть возможность *вставлять сразу несколько столбцов*, указав их через запятую.
+
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL,
+                      ADD preview_text,
+                      ADD comments TEXT;
+
+```
+
+По аналогии с указанием размещения после других столбцов.
+
+```sql
+ALTER TABLE Customers ADD Address VARCHAR(50) NULL AFTER comments,
+                      ADD preview_text TEXT AFTER Age;
+```
+
+### Удаление столбца
+Удалим столбец `Address` из таблицы `Customers`:
+```sql
+ALTER TABLE Customers DROP COLUMN Address;
+```
+
+Удалить несколько столбцов в одном операторе.
+
+```sql
+ALTER TABLE Customers DROP COLUMN Address, Preview_text
+```
+
+### Изменение значения по умолчанию
+Установим в таблице `Customers` для столбца `Age` значение по умолчанию 22:
+```sql
+ALTER TABLE Customers ALTER COLUMN Age SET DEFAULT 22;
+```
+
+### Изменение типа столбца
+Изменим в таблице `Customers` тип данных у столбца `FirstName` на `CHAR(100)` и установим для него атрибут `NULL`:
+```sql
+ALTER TABLE Customers MODIFY COLUMN FirstName CHAR(100) NULL;
+```
+
+### Добавление и удаление внешнего ключа
+Пусть изначально в базе данных будут добавлены две таблицы, никак не связанные:
+```sql
+CREATE TABLE Customers (
+    IdC INT PRIMARY KEY AUTO_INCREMENT,
+    Age INT,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL);
+
+CREATE TABLE Orders (
+IdO INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerId INT,
+    CreatedAt DATE);
+```
+
+Добавим ограничение внешнего ключа к столбцу `CustomerId` таблицы `Orders`:
+```sql
+ALTER TABLE Orders ADD FOREIGN KEY(CustomerId) REFERENCES Customers(Id);
+```
+
+При добавлении ограничений мы можем указать для них имя, используя оператор **`CONSTRAINT`**, после которого указывается имя ограничения:
+```sql
+ALTER TABLE Orders ADD
+CONSTRAINT orders_customers_fk FOREIGN KEY(CustomerId) REFERENCES Customers(IdC);
+```
+
+В данном случае ограничение внешнего ключа называется `orders_customers_fk`. Затем по этому имени мы можем удалить ограничение:
+```sql
+ALTER TABLE Orders DROP FOREIGN KEY orders_customers_fk;
+```
+
+Если ограничение не использовалось при добавлении внешнего ключа, а необходимо удалить внешний ключ, то необходимо выполнить следующие команды:
+- просмотрите структуру созданной таблицы
+    ```sql
+    SHOW CREATE table course;
+    ```
+
+- найдите название ограничения `CONSTRAINT`, которое обязательно содержит символы `fk`, и обычно похож, например, на `(course_ibfk_1)`.
+
+    Имя ограничения может отличаться в зависимости от вашей версии `mysql`, которую вы используете.
+
+- Затем удалите внешний ключ следующим образом:
+
+    ```sql
+    alter table course drop foreign key course_ibfk_1;
+    ```
+
+### Добавление и удаление первичного ключа
+
+Добавим в таблицу `Products` первичный ключ:
+```sql
+CREATE TABLE Products (
+    Id INT,
+    Model VARCHAR(20)
+);
+ ALTER TABLE Products ADD PRIMARY KEY (Id);
+```
+
+Теперь удалим первичный ключ:
+```sql
+ALTER TABLE Products DROP PRIMARY KEY;
+```
