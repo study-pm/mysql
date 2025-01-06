@@ -345,6 +345,13 @@
     - [Удаление ограничений](#удаление-ограничений)
   - [Добавление и удаление внешнего ключа при помощи `ALTER TABLE`](#добавление-и-удаление-внешнего-ключа-при-помощи-alter-table)
   - [Добавление и удаление первичного ключа](#добавление-и-удаление-первичного-ключа)
+  - [Практическая работа 4.О Изменение структуры таблиц](#практическая-работа-4о-изменение-структуры-таблиц)
+    - [Критерии оценивания работы](#критерии-оценивания-работы-2)
+    - [Критерии выставления оценки](#критерии-выставления-оценки-2)
+    - [Содержание работы](#содержание-работы-3)
+    - [4.Т Типовое задание](#4т-типовое-задание)
+    - [Ход выполнения типового задания 4.Т](#ход-выполнения-типового-задания-4т)
+    - [Задание 4.1.О](#задание-41о)
 
 ## Общее
 [67081d0d5040133e8429e3d6](https://e-learn.petrocollege.ru/course/view.php?id=6222#section-0)
@@ -6745,3 +6752,330 @@ CREATE TABLE Products (
 ```sql
 ALTER TABLE Products DROP PRIMARY KEY;
 ```
+
+### Практическая работа 4.О Изменение структуры таблиц
+[676298c55040133e8429e8ab](https://e-learn.petrocollege.ru/mod/assign/view.php?id=282907)
+
+Формируемые/проверяемые умения | Формируемые/проверяемые
+-- | --
+Создавать объекты баз данных в современных СУБД | Основные положения теории баз данных, хранилищ данных, баз знаний<br>Методы описания схем баз данных в современных СУБД
+
+- Время выполнения задания – 90 минут.
+- Уровень сложности работы – 2
+- Необходимое оборудование, материалы, документация: ПК, МУ по выполнению практических работ.
+
+#### Критерии оценивания работы
+
+| Наименование показателей             | Количество баллов |
+| ------------------------------------ | :---------------: |
+| Изменено название таблицы            | 1                 |
+| Добавлен новый столбец в таблицу     | 1                 |
+| Изменено имя и тип поля таблицы      | 1                 |
+| Переименовано имя поля таблицы       | 1                 |
+| Изменен размер поля таблицы          | 1                 |
+| Удален столбец таблицы               | 1                 |
+| Добавлен простой индекс в таблицу    | 1                 |
+| Добавлен уникальный индекс в таблицу | 1                 |
+| Добавлено ключевое поле в таблицу    | 1                 |
+| Добавлен внешний ключ таблицы        | 1                 |
+| Максимальное количество баллов       | 10                |
+
+#### Критерии выставления оценки
+
+| Баллы | Оценка            |
+| :---: | ----------------- |
+| 10-8  | отлично           |
+| 7     | хорошо            |
+| 6     | удовлетворительно |
+
+#### Содержание работы
+Произвести изменения в структуре созданных таблиц.
+
+#### 4.Т Типовое задание
+1. Изменено название таблицы
+2. Добавлен новый столбец в таблицу
+3. Изменено имя и тип поля таблицы
+4. Переименовано имя поля таблицы
+5. Изменен размер поля таблицы
+6. Удален столбец таблицы
+7. Добавлен простой индекс в таблицу
+8. Добавлен уникальный индекс в таблицу
+9. Добавлено ключевое поле в таблицу
+10. Добавлен внешний ключ таблицы
+
+#### Ход выполнения типового задания 4.Т
+1. Cоздадим базу данных и таблицу, которые мы будем называть соответственно «mytest» и «andreyex».
+
+    ```sql
+    CREATE DATABASE mytest;
+    USE mytest;
+    CREATE TABLE andreyex (id int NOT NULL, name varchar(255));
+    ```
+
+2. Именим таблицу andreyex на myusers
+
+    ```sql
+    ALTER TABLE andreyex RENAME myusers;
+    ```
+
+3. Добавим строковый столбец `address`
+
+    ```sql
+    ALTER TABLE myusers ADD COLUMN address varchar(10);
+    ```
+
+    (Удалениестолбца: `ALTER TABLE table_name DROP COLUMN column_name;`)
+
+4. Добавим столбец `TIMESTAMP` с именем `date`
+
+    ```sql
+    ALTER TABLE myusers ADD date TIMESTAMP;
+    ```
+
+5. Добавим индекс в столбец с именем `id`
+
+    ```sql
+    ALTER TABLE myusers ADD INDEX (id);
+    ```
+
+    (Удалить индекс: `ALTER TABLE table_name DROP INDEX index_name;`)
+
+6. Добавим несколько изменений
+
+    ```sql
+    ALTER TABLE myusers ADD uid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    ADD UNIQUE (uid);
+    ALTER TABLE myusers
+      MODIFY date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+    ```
+
+    Теперь наша таблица должна выглядеть так:
+    ```
+    mysql> DESCRIBE myusers;
+    +---------+--------------+------+-----+-------------------+-----------------------------------------------+
+    | Field   | Type         | Null | Key | Default           | Extra                                         |
+    +---------+--------------+------+-----+-------------------+-----------------------------------------------+
+    | id      | int          | NO   | MUL | NULL              |                                               |
+    | name    | varchar(255) | YES  |     | NULL              |                                               |
+    | address | varchar(10)  | YES  |     | NULL              |                                               |
+    | date    | timestamp    | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+    | uid     | int unsigned | NO   | PRI | NULL              | auto_increment                                |
+    +---------+--------------+------+-----+-------------------+-----------------------------------------------+
+    5 rows in set (0.00 sec)
+
+    ```
+
+    > Note that the Extra information "DEFAULT_GENERATED" is only present in MySQL 8.0. it's related to the new feature to support expressions in the `DEFAULT` clause. Any other expression also results in this Extra information.[^55525248]
+
+    [^55525248]: [Alter MySQL's SHOW COLUMS "Extra" value](https://stackoverflow.com/questions/55525248/alter-mysqls-show-colums-extra-value)
+
+7. Изменим тип столбца
+
+    7.1 Изменим поле адреса, чтобы разрешить более крупные строки:
+
+    ```sql
+    ALTER TABLE myusers MODIFY address VARCHAR(255);
+    ```
+
+    7.2 Объединим сразу несколько модификаций:
+
+    Изменим столбец с именем «name» на «lastname» и укажем ему значение `NOT NULL`.
+
+    ```sql
+    ALTER TABLE myusers MODIFY address VARCHAR(255), CHANGE name lastname VARCHAR(255) NOT NULL;
+    ```
+
+8. Измененим значения столбца по умолчанию
+
+    Чтобы изменить значение по умолчанию для столбца, используйте синтаксис `SET DEFAULT`:
+    ```sql
+    ALTER TABLE myusers ALTER address SET DEFAULT 'unknown';
+    ```
+
+    Теперь наша финальная таблица выглядит так:
+    ```
+    mysql> DESCRIBE myusers;
+    +----------+--------------+------+-----+-------------------+-----------------------------------------------+
+    | Field    | Type         | Null | Key | Default           | Extra                                         |
+    +----------+--------------+------+-----+-------------------+-----------------------------------------------+
+    | id       | int          | NO   | MUL | NULL              |                                               |
+    | lastname | varchar(255) | NO   |     | NULL              |                                               |
+    | address  | varchar(255) | YES  |     | unknown           |                                               |
+    | date     | timestamp    | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+    | uid      | int unsigned | NO   | PRI | NULL              | auto_increment                                |
+    +----------+--------------+------+-----+-------------------+-----------------------------------------------+
+    5 rows in set (0.00 sec)
+    ```
+
+9. Изменим порядок следования столбцов.
+
+    Допустим, у нас есть таблица `users` со следующими полями: `name`, `age`.
+
+    Добавим новое поле `country` в конец списка.
+
+    ```sql
+    ALTERTABLE users ADD country VARCHAR(64) NOTNULL;
+    SHOW COLUMNS FROMusers;
+    ```
+
+    ```
+    +---------+-------------+------+-----+---------+-------+
+    | Field   | Type        | Null | Key | Default | Extra |
+    +---------+-------------+------+-----+---------+-------+
+    | name    | varchar(50) | YES  |     | NULL    |       |
+    | age     | int(3)      | YES  |     | NULL    |       |
+    | country | varchar(64) | NO   |     |         |       |
+    +---------+-------------+------+-----+---------+-------+
+    ```
+
+    9.1 Добавим новое поле `id` в начало списка:
+    ```sql
+    ALTER TABLE users
+      ADD id INT(11) NOTNULLAUTO_INCREMENT PRIMARYKEY FIRST;
+    SHOW COLUMNS FROMusers;
+    ```
+
+    ```
+    +---------+-------------+------+-----+---------+----------------+
+    | Field   | Type        | Null | Key | Default | Extra          |
+    +---------+-------------+------+-----+---------+----------------+
+    | id      | int(11)     | NO   | PRI | NULL    | auto_increment |
+    | name    | varchar(50) | YES  |     | NULL    |                |
+    | age     | int(3)      | YES  |     | NULL    |                |
+    | country | varchar(64) | NO   |     |         |                |
+    +---------+-------------+------+-----+---------+----------------+
+    ```
+
+    9.2 Добавим новое поле `city` перед полем `country` (т.е. после поля `age`):
+    ```sql
+    ALTER TABLE users ADD city VARCHAR(64) AFTER age;
+    ```
+
+    Список полей таблицы `users`:
+    ```sql
+    SHOW COLUMNS FROM`users`;
+    ```
+
+    ```
+    +---------+-------------+------+-----+---------+----------------+
+    | Field   | Type        | Null | Key | Default | Extra          |
+    +---------+-------------+------+-----+---------+----------------+
+    | id      | int(11)     | NO   | PRI | NULL    | auto_increment |
+    | name    | varchar(50) | YES  |     | NULL    |                |
+    | age     | int(3)      | YES  |     | NULL    |                |
+    | city    | varchar(64) | YES  |     | NULL    |                |
+    | country | varchar(64) | NO   |     |         |                |
+    +---------+-------------+------+-----+---------+----------------+
+    ```
+
+    9.3 Изменим несколько столбцов
+    ```sql
+    ALTERTABLEcontacts
+      MODIFY last_name varchar(55) NULL AFTER contact_type,
+      MODIFY first_name varchar(30) NOT NULL;
+    ```
+
+    Поле `last_name` будет изменено на столбец `NULL varchar (55)` и появится в таблице после столбца `contact_type`. Столбец `first_name` будет изменен на столбец `varchar (30) NOT NULL` (и не изменит позицию в определении таблицы `contacts`, так как не указано `FIRST` | `AFTER`).
+
+Для рассматриваемой в методических указаниях базы данных выполним операторы, представленные ниже.
+
+1. Удалим внешние ключи таблицы `Order`.
+
+    Через ограничение: `ALTER TABLE Order DROP CONSTRRAINT fk_client;`
+
+    Или по имени внешнего ключа:
+    ```sql
+    ALTER TABLE Order DROP FOREIGN KEY ID_client;
+    ALTER TABLE Order DROP FOREIGN KEY ID_prod;
+    ```
+
+2. Снова добавим удаленные внешние ключи в таблицу `Order`.
+
+    ```sql
+    ALTER TABLE Order ADD CONSTRAINT fk_client FOREIGN KEY (ID_client) REFERENCES client (ID_client) ON UPDATE RESTRICT ON DELETE RESTRICT,
+    ADD CONSTRAINT fk_prod FOREIGN KEY (ID_prod) REFERENCES product (ID_prod) ON UPDATE RESTRICT ON DELETE RESTRICT;
+    ```
+
+    Наша база увеличилась и имеет теперь следующую инфологическую модель.
+
+    ![Picture 1](./img/Picture1.png)
+
+    Дополнительно определяем атрибуты и первичный ключ для новой сущности `Филиал`. Поскольку в представленной постановке задачи ничего не говориться о данных, которые должны быть предоставлены для филиала, предположим, что для каждого филиала будем указывать его телефон и адрес, а также фамилию директора, если таковой имеется. Установим, что поля `Директор` и `Телефон` не обязательны к заполнению, поле `Директор` может содержать пустое значение, поле `Телефон` по умолчанию заполняется номером справочной (один номер для всех филиалов).
+
+    Кроме того, в таблице `Заказ` добавится один внешний ключ к таблице `Филиал`. А также удалится поле и внешний ключ, отражающий связь между заказом и продукцией.
+
+    Построим физическую модель (таблицы) и заполним их новыми данными.
+
+    Создаем две новые таблицы.
+
+    ```sql
+    CREATE TABLE point (
+      Id_pointint(10) NOT NULL AUTO_INCREMENT,
+      Addresschar(25) CHARACTER SET latin1 NOT NULL,
+      Phonechar(15) CHARACTER SET latin1 DEFAULT '80023456',
+      Directorvarchar(20) DEFAULT NULL, PRIMARY KEY (Id_point)
+    );
+
+    CREATE TABLE order_product (
+      Order_IDint(10) NOT NULL,
+      Product_IDint(10) NOT NULL,
+      Amountint(4) unsigned NOT NULL, PRIMARY KEY (Order_ID,Product_ID)
+    );
+    ```
+
+3. Добавим внешние ключи. Имена внешних ключей можно не указывать, тогда система даст им свои имена.
+
+    ```sql
+    ALTER TABLE order_product
+    ADD FOREIGN KEY (Order_ID) REFERENCES order
+    (ID_order) ON UPDATE RESTRICT ON DELETE RESTRICT,
+    ADD FOREIGN KEY (Product_ID) REFERENCES product (ID_prod) ON UPDATE RESTRICT ON DELETE RESTRICT;
+    ```
+
+4. Поскольку изначально атрибута `Заказ.ID_филиала` у нас не было, то это поле надо создавать с возможностью значения `NULL`.
+
+    ```sql
+    ALTER TABLE order ADD ID_pointINT(10) AFTER ID_prod;
+    ```
+
+    Добавим в таблицу `order` внешний ключ, т.к. у нас появилась табличка филиал и в заказе должен быть указан филиал.
+
+    ```sql
+    ALTER TABLE order ADD FOREIGN KEY (ID_point) REFERENCES point (Id_point) ON UPDATE RESTRICT ON DELETE RESTRICT;
+    ```
+
+#### Задание 4.1.О
+Написать запросы изменения структуры данных в соответствии со своим вариантом.
+
+Вариант | Описание задания
+-- | --
+1. |	1. Cоздатьтаблицу `Sotr(ferst_namevarcar(10), patronymic varcar(15)c, last_namevarcar(15), n_pasport varcar(15), pol char(3))`.<br>2. Создать таблицу поле `Obrazovanie(nazv varchar(15))`.<br>3. Добавить в таблицу `Sort` одно поле с именем `pole1` типа `varchar(20)`.<br>4. Добавить ключевое поле `id_s` в таблицу `Sotr`, а в таблицу `Obrazovanie` ключевое поле `id_obr`.<br>5. Добавить простой индекс для поля `last_name` в таблице `Sotr`.<br>6. Добавить уникальный индекс для поля `n_pasport` в таблицу `Sotr` и поставить его после третьего по списку полей в таблице.<br>7. Изменить тип поля столбца `ferst_name` на `char(15)` в таблице `Sotr`.<br>8. Добавить поле `pol varchar(7)`, поле `ageint` в таблицу `Sotr`.<br>9. Переименовать поле `pol` в `sex`.<br>10. Удалить поле `patronymic` из таблицы `Sotr`.<br>11. Добавить в таблицу `Sotr` внешний ключ `id_obr int` и предусмотреть каскадирование на `DELETE`.<br>12. Переименовать таблицу `Sotr` в `Sotrudnic`.
+2. | 1. Cоздатьтаблицу с клиентами `clients (name varchar(20), age int, dolgnost vachar(15), dolgnost varchar(10))`<br>2. Вставить в таблицу два поля `telephonchar(11)` и `Namevarchar(30)`.<br>3. Добавить уникальный индекс для поля `telephon` и простой индекс для поля `age`.<br>4. Изменить тип поля `dolgnost` на `char(12)` в таблице `client`.<br>5. Создать таблицу `ctrana(nazv_ctrvarcar(10))`<br>6. Добавить ключевое поле `id_c int` в таблицу `clients` и ключевое поле `id_c` в таблицу `ctrana`.<br>7. Добавить простой индекс для поля `age` и поставить его перед полем `name`<br>8. Изменить имя и размер текстового поля `nazv_ctr` на `nazv_country varchar(20)` в таблице `ctrana`.<br>9. Переименовать поле `dolgnost` таблицы `clients` в `post` типа `varchar(15)`<br>10. Добавить в таблицу `clients` внешний ключ `id_d` c `ON UPDATE RESTRICT`<br>11. Удалить поле `dolgnost` из таблицы `clients`.<br>12. Переименовать таблицу `ctrana` в `country`.
+3. | 1. Создать таблицу `avto(nom_reg varvar(15), god char(4), cena int(6), color varchar(12))`.<br>2. Добавить уникальный индекс для поля `nom_reg` и простой индекс для поля `god` и поставить его после поля `cena`.<br>3. Создать таблицу `marka(nazvanie varchar(10))`<br>4. Добавить в таблицу `marka` дваполя: `countryvarchar(15)` и `statuschar(10)`<br>5. Добавит ключевое поле `id_a int` в таблицу `avto`, а в таблицу `marka` – `id_m`.<br>6. Переименовать поле `god` таблицы `avto` в `year_est`.<br>7. Переименовать поле `cena` и изменить его тип на `pricefloat(5,2)` в таблице `avto`.<br>8. Добавить простой индекс для полей `price` и `year_est` таблицы `avto`.<br>9. Изменить размер поля столбца `nazvanie` таблицы `marka` на `varchar(17)`.<br>10. Удалить поле `color` из таблицы `avto`.<br>11. Добавить в таблицу `avto` внешний ключ `id_mс` каскадированием по `ONUPDATE`.<br>12. Переименовать таблицу `avto` в `car`.
+4. | 1. Cоздать таблицу `acter(ferst_namevarcar(10), patronymic varcar(15) c, last_namevarcar(15))`.<br>2. Создать таблицу `rol( nazv_rvarchar(15))`.<br>3. Добавить в таблицу `acter` одно поле с именем `sex` типа `varchar(10)` и поставить его перед полем `ferst_namevarcar`.<br>4. Добавить ключевое поле `id_act` в таблицу `acter`, а в таблицу `rol` – `id_rol`.<br>5. Добавить простой индекс для поля `last_name` в таблицу `acter`.<br>6. Добавить уникальный индекс в поле `nazv` таблицы `rol`.<br>7. Изменить тип поля `ferst_name varcar` на `char(15)`.<br>8. Добавить поле `pol varchar(8)` и поле `age int` в таблицу `acter`.<br>9. Переименовать поле `pol` в `sex` c типом `char(3)`.<br>10. Удалить поле `patronymic` из таблицы `acter`.<br>11. Добавить в таблицу `acter` внешний ключ `id_rol int` и предусмотреть каскадирование на `DELETE`.<br>12. Переименовать таблицу `rol` в `Role`.
+5. | 1. Cоздать таблицу с клиентами `clients (name varchar(20), age int, dolgn varchar(10), Npasport char(10))`.<br>2. Вставить в таблицу поля `telephon char(11)` и установить его перед полем `dolgn`.<br>3. Добавить уникальный индекс для поля `Npasport` и простой индекс для поля `age`.<br>4. Создать таблицу `dolgnost(nazv_dolgn varcar(10), oklad int)`<br>5. Добавить ключевое поле `id_client int` в таблицу `clients`, а втаблицу `dolgnost` – `id_dolg`.<br>6. Добавить простой индекс для поля `age` таблицы `clients` и поставить это поле после поля `Npasport`.<br>7. Добавить уникальный индекс для поля nazv_dolgn в таблице `dolgnost`.<br>8. Изменить размер текстового поля `nazv_dolgnost` таблицы `dolgnost` на `varchar(20)`.<br>9. Переименовать поле `dolgn` таблицы `clients` в `post` типа `varchar(15)`<br>10. Добавить в таблицу `clients` внешний ключ `id_clien` c `ON UPDATE RESTRICT`.<br>11. Удалить поле `post` из таблицы `clients`.<br>12. Переименовать таблицу `dolgnost` в `post`.
+6. | 1. Cоздать таблицу `doctors(fio varchar(20), berth(date), tel vachar(11))`.<br>2. Вставить в таблицу `doctors` два поля `otdelchar(11)` и `stag int`.<br>3. Добавить в таблицу `doctors` уникальный индекс для поля `tel` и простой индекс для поля `stag`.<br>4. Изменить тип поля `tel` на `char(11)`.<br>5. Создать таблицу `kvalif(id_kint, nazv_kvalvarcar(10))`.<br>6. Добавить ключевое поле `id_k int` для таблицы `doctors`, а в таблицу `kvalif` – `id_k`.<br>7. Добавить простой индекс для поля `berth` и поставить его после поля `otdel`.<br>8. Изменить размер текстового поля `nazv_kval` на `varchar(20)`.<br>9. Переименовать поле `tel` таблицы `doctors` в `telephone` типа `varchar(14)`.<br>10. Добавить в таблицу `doctors` внешний ключ `id_k` c `ON DELETE CASCADE`.<br>11. Удалить поле `otdel` из таблицы `doctors`.<br>12. Переименовать таблицу `kvalif` в `kvalification`.
+7. | 1. Создать таблицу `teachers(ferst_name varvar(15), patronimic char(15), Last_name varchar(15) age int(4))`.<br>2. Добавить простой индекс для полей `Last_name` и `age`. Поставить поле `age` перед полем `ferst_name` таблицы `teachers`.<br>3. Создать таблицу `otdel(nazvanie varchar(10), abbrivo varchar(5))`.<br>4. Добавить в таблицу `teachers` два поля: `berthdate` и `reit int(2)`.<br>5. Добавить ключевое поле `id_t int` в таблицу `teachers` и поле `id_o` в таблицу `otdel`.<br>6. Переименовать поле berthв таблице teacherна berthday.<br>7. Переименовать поле `reit` таблицы `teachers` в `reiting varchar(3)`.<br>8. Добавить уникальный индекс для поля  `nazvanie` таблицы `otdel`.<br>9. Изменить размер поля столбца `Last_name` на `varchar(17)`.<br>10. Удалить поле `abbrivo` из таблицы `otdel`.<br>11. Добавить в таблицу `teachers` внешний ключ `id_oс` каскадированием по `ON UPDATE`<br>12. Переименовать таблицу `otdel` в `department`.
+8. |	1. Создать таблицу `book(nazv_k varchar(20), god char(4))`.<br>2. Добавить для поля `nazv_k` простой индекс.<br>3. Добавить в таблицу `book` два поля: `price int(3)`, `page int(4)` и установить поле `price` перед полем `god`.<br>4. Создать таблицу `avtor(fio_a varchar(20), tel varchar(9), address(25))`.<br>5. Добавить для поля `tel` уникальный индекс.<br>6. Изменить тип и имя поля `god` в таблице `book` на `year_izd` и поставить его после поля `price`.<br>7. Изменить тип поля `price` таблицы `book` на `float(5,2)` и поле `address` на `varchar(30)`.<br>8. Добавить в таблицу `book` ключевое поле `id_b`, а в таблицу `avtor` – `id_a`.<br>9. Изменить имя и тип для поля `tel` таблицы `avtor` на `telephone varchar(11)`.<br>10. Удалить из таблицы `avtor` поле `address`.<br>11. Добавить в таблицу `book` внешний ключ `id_c` каскадированием.<br>12. Переименовать таблицу `book` в `books`.
+9. | 1. Cоздать таблицу `film(nazv_f varchar(20), god_s int(4), cena int)`.<br>2. Добавить простой индекс для поля `nazv_f` в таблице `film`.<br>3. Изменить тип поля `cena float(5,2)`.<br>4. Создать таблицу `strana(nazv_s varchar(20), kol_people int(11))`.<br>5. Добавить ключевое поле `id_f` в таблицу `film`, а в таблицу `strana` – `id_s`.<br>6. Переименовать поле `cena` таблицы `film` в `price` и поставить перед полем `god_s`.<br>7. Создать уникальный ключ `nazv_s` в таблице `strana`.<br>8. Добавить поле `fio_reg varchar(25)`, и переместить его после поля `god_s` таблицы `film`.<br>9. Добавить внешний ключ `id_s` в таблицу `film` и предусмотреть каскадирование по `ON DELETE CASCADE`.<br>10. Изменить размер поля `nazv_f` на `varchar(30)`.<br>11. Удалить поле `kol_people` в таблице `strana`.<br>12. Изменить имя таблицы `film` на `sinema`.
+10. | 1. Создать таблицу `raboch(first_n varchar(15), patronymic varchar(15), last_n varchar(15), age int(2))`.<br>2. Добавить в таблицу `raboch` ключевое поле `id_r`.<br>3. Добавить в таблицу `raboch` поле `birthdate` и поставить его перед `age`.<br>4. Создать таблицу `ceh(nazv_cvarchar(15), fio_ncvarchar(20))`.<br>5. Добавить в таблицу `raboch` внешний ключ `id_c int` и добавить на `ON UPDATE RESTRICT`.<br>6. Добавить в таблицу `raboch` простые индексы для полей `first_n` и `age` таблицы `raboch`.<br>7. Изменить длину поля `fio_nc` таблицы `ceh` на `varchar(25)`, а поле `nazv_c` на `varchar(18)`.<br>8. Удалить из таблицы `raboch` поле `patronymic`.<br>9. Добавить в таблицу `ceh` уникальный ключ для поля `nazv_c`.<br>10. Изменить имя поле `btrth` таблицы `raboch` на `birthday`.<br>11. Изменить тип поля `nazv_c` на `char(16)`.<br>12. Изменить имя таблицы `raboch` на `working`.
+11. |	1. Создать таблицу `metal(nazv varchar(15), strana varchar(15))`.<br>2. Добавить в таблицу metalполе `countryvarchar(20)`.<br>3. Создать таблицу `detal(nazv_d varchar(15), ves int, cena int)`.<br>4. Добавить уникальный индекс для поля `nazv_m`.<br>5. Изменить типы имя полей `ves` и таблицы `detal`: `ves float(5,3)` и `price float(5,3)`.<br>6. Добавить простой индекс для поля `nazv_d` и установить его за полем `cena`.<br>7. Добавить ключевое поле `id_m` в таблицу `metal` и `id_d` в таблицу `detal`.<br>8. Увеличить размер поля `nazv` на `varchar(20)` таблицы `metal`.<br>9. Изменить имя поля `nazv_d` на `nazv_det`.<br>10. Добавить внешний ключ `id_m` в таблицу `detal` и предусмотреть каскадирование.<br>11. Удалить поле `strana` из таблицы `metal`.<br>12. Переименовать таблицу `detal` в `detail`.
+12. | 1. Создать таблицу `gruppa(N_grup char(4), kol char(2), fio_star varchar(15))`.<br>2. Добавить в таблицу gruppaполе `fio_klrvarchar(15)` и переместить его перед полем `kol`.<br>3. Добавить простой индекс для поля `N-grup`.<br>4. Создать таблицу `student(name1 varchar(15), name2 varchar(15), name3 varchar(15), birth date)`.<br>5. Добавить в таблицу `gruppa` уникальный индекс для поля `N_grup`.<br>6. Добавить ключевое поле `id_s` в таблицу `student` и ключевое поле `id_g` в таблицу `gruppa`.<br>7. Изменить название и тип поля `kol` таблицы `gruppa` на `kolich int(2)`.<br>8. Удалить поле `fio_klr` из таблицы `gruppa`.<br>9. Добавить внешний ключ `id_g int` в таблицу `student` и добавить `ON UPDATE RESTRICT`.<br>10. Добавить поле `year_post` типа `year` в таблицу `student`.<br>11. Добавить простой индекс для поля `birth` таблицы `student`.<br>12. Изменить название таблицы `gruppa` в `group`.<br>
+13. | 1. Создать таблицу `sportsmen(first_n, patronymic, last-n, berth date)`.<br>2. Добавить поле `telvarchar(11)` в таблице `sportsmen`.<br>3. Изменить длину поля `last_nvarchar(20)`.<br>4. Создать таблицу `komand(nazvvarchar(20))`.<br>5. Добавить в таблицу `sportsmen` ключевое поле `id_s int`, а в таблицу `komand` – `id_k`.<br>6. Удалить из таблицы `sportsmen` поле `first_n`, `patronymic` и `last_n` и добавить поле `fio varchar(40)`, поставив его перед полем `birth`.<br>7. Изменить имя поля `birth` таблицы `sportsmen` на `birthday`.<br>8. Добавить в таблицу `sportsmen` внешний ключ `id_s` и добавить каскадирование.<br>9. Добавить в таблицу `komand` поле `fio_trener varchar(20)` и `year_sozd` типа `year`.<br>10. Добавить уникальный индекс для поля `nazv` таблицы `komand`.<br>11. Создать простой индекс для поля `birth`.<br>12. Изменить поля таблицы `sportsmen` на `sportsman`.
+14 | 1. Создать таблицу `product(nazv_p varchar(15), cena int)`<br>2. Добавить в таблицу `product` поле `kol int`, `opt_cena int`.<br>3. Добавить простые индексы для полей `nazv_p` и `cena`, переместив поле `kol` перед полем `cena` таблицы `product`.<br>4. Создать уникальный индекс для поля `nazv_p` таблицы `product`.<br>5. Создать таблицу `typ(nazv_tvarchar(15))`.<br>6. Добавить в таблицу `product` ключевое поле `id_p`, а в таблицу `typ` ключевое поле `id_t`.<br>7. Изменить имя поля `kol` таблицы `product` на `quantity`.<br>8. Добавить в таблицу `product` поле `roznl_cena int`.<br>9. Изменить имя и тип полей `cena`, `rozn_cena`, `opt_cena` на `price float(5,2)`, `retail_price float(5,2)`, `wholesale_price`.<br>10. Добавить уникальный индекс для поля `nazv_t` в таблицу `typ`.<br>11. Добавить внешний ключ `id_t` в таблицу `product` и добавить `ON DELETE RESTRICT`.<br>12. Изменить имя таблицы `typ` на `type_of`.
+15. | 1. Создать таблицу `bludo(nazv_b varchar(25), ves int)`.<br>2. Добавить в таблицу `bludo` поле `cena int(4)` и переместить его перед полем `ves`.<br>3. Добавить в таблицу `bludo` простые индексы для полей `nazv_b` и `cena`.<br>4. Создать таблицу `typ(nazv varchar(10))`.<br>5. Добавить ключевое поле `id_b` для таблицы `bludo` и `id_t` для таблицы `typ`.<br>6. Изменить размер поля `nazv` на `varchar(20)`.<br>7. Добавить в таблицу `typ` уникальный ключ для поля `nazv`.<br>8. Добавить в таблицу `bludo` ключевое поле `id_b`, а в таблицу `typ` – `id_t`.<br>9. Добавить в таблицу `bludo` внешний ключ `id_t` и добавить каскадирование.<br>10. Удалить поле `ves_b` из таблицы `bludo`.<br>11. Добавить уникальный индекс для поля `nazv` таблицы `typ`.<br>12. Изменить имя таблицы `typ` на `type_bluda`.
+16. | 1. Создать таблицу `dog(klichka varchar(15), rost int(3), ves int(3))`.<br>2. Добавить в таблицу `dog` поля `mastvarchar(20) иprizerchar(3)` и переместить поле `mast` перед полем `rost`.<br>3. Создать таблицу `poroda(nazv_por varchar(15))`.<br>4. Добавить ключевые поля `id_por int` в таблицу `poroda` и `id_dog` в таблицу `poroda`.<br>5. Добавить простые индексы для полей `ves` и `rost` в таблицу `dog`.<br>6. Добавить поле `fio_hoz varchar(20)` в таблицу `dog`.<br>7. Изменить имена и типы полей `rost` на `growth float(5,2)` и `ves` на `weight float(5,2)` в таблицу `dog`.<br>8. Добавить уникальный индекс для поля `nazv_por` таблицы `poroda`.<br>9. Добавить внешний ключ для таблицы `dog` – `id_d` и добавить `ON UPDATE CASCADE`.<br>10. Добавить внешний ключ `id_por` в таблицу `dog`.<br>11. Удалить поле `weight` из таблицы `dog`.<br>12. Изменить имя таблицы porodaна `breed`.
+17. | 1. Создать таблицу `table(price int(5), high tint(3))`.<br>2. Добавить в таблицу `table` поле `width int(3)` и `god_v int(4)`.<br>3. Создать таблицу `pokritie(nazv_p varchar(15), price float(4,2))`.<br>4. Изменить длину поля `nazv_p` на `varchar(20)` в таблице `pokritie`.<br>5. Изменить имя и тип поля `nazv_p` на `nazvanie varchar(20)`.<br>6. Добавить простой индекс для полей `price` и `god_v` для таблицы `table`.<br>7. Добавить уникальный индекс для поля `nazv_p` для поля `pokritie`.<br>8. Добавить ключевое поле `id_t` для таблицы `table` и `id_p` для таблицы `pokritie`.<br>9. Добавить внешний ключ `id_pint` и для таблицы `table` и добавить каскадирование.<br>10. Удалить поле `price` из таблицы `pokritie`.<br>11. Изменить длину поля `nazv_p` на `varchar(20)`.<br>12. Изменить имя таблицы `poktitie` на `coating`.
+18. | 1. Создать таблицу `sudno(name_s varchar(10))`.<br>2. Добавить в таблицу `sudno` поле `god_sint(4), gruzopodumnost int(6), skorost int(3)`.<br>3. Переместить поле `skorost` перед полем `god_s`.<br>4. Добавить в таблицу `sudno` простые индексы для полей `god_s` и `skorost`.<br>5. Создать таблицу `strana(nazv_s varchar(15))`.<br>6. Добавить ключевые поля `id_s` в таблицу `sudno` и `id_str` в таблицу `strana`.<br>7. Добавить внешний ключ `id_str` в таблицу `sudno` и добавить `ON DELETE RESTRICT`.<br>8. Изменить имя и тип полей: `god_s` – `god_sozd year` и `skorost` – `speed_s float(5,2)`.<br>9. Увеличить размер поля `name_svarchar(20)`.<br>10. Добавить поле `continent varchar(15)` в таблицу `strana`.<br>11. Удалить из таблицы `sudno` поле `gruzupodumnost`.<br>12. Изменить имя таблицы `sudno` на `vessel`.
+19. | 1. Создать таблицу `pacient(first_n varchar(10), patronymic varchar(10), last_n varchar(10), n_pasp varchar(10))`.<br>2. Добавить в таблицу `pacient` поля `birthd date`, `nom-pal int(2)`, `pol char(1)` в таблицу `pacient`.<br>3. Добавить в таблицу `pacient` простые индексы для полей `firas_n` и `birthd`.<br>4. Создать таблицу `zabolevanie(nazv_z varchar(25), lechenie varchar(40))`.<br>5. Добавить уникальный индекс для поля `nazv_z` таблицы `zabolevanie` и `n_pasp` для таблицы `pacient`.<br>6. Изменить имя поля `birthd` на `birth_day` в таблице `pacient`.<br>7. Добавить первичные ключи `id_z` в таблицу `zabolevanie` и `id_p` в таблице `pacient`.<br>8. Добавить внешний ключ `id_z` в таблицу `pacient` и добавить `ON UPDATE CASCADE`.<br>9. Переставить поле `birth_day` перед `n_pasp` в таблице `pacient`.<br>10. Изменить имя и размер полей в таблице `pacient`: `first_n` на `name varchar(15)`, `last_n` на `surname varchar(20)`.<br>11. Удалить из таблицы `zabolevanie` поле `lechenie`.<br>12. Изменить имя таблицы `pacient` на `patient`, а таблицы `zabolevanie` на `disease`.
+20. | 1. Создать таблицу `samolet(nazv_svarchar(15), bort varchar(10))`.<br>2. Добавить в таблицу `samolet` поля `skorost int`, `potolok int`.<br>3. Добавить уникальный индекс для поля `nazv_s`.<br>4. Добавить простые индексы в таблицу `samolet` для поля `bort` и `skorost`.<br>5. Переместить поле `bort` в начало списка полей таблицы `samolet`.<br>6. Изменить имя и тип поля `skorost` на `speed float(5,2)` и `potolok` на `aircraft float(5,2)`.<br>7. Создать таблицу `passanger(fio varchar(15), n_pasp varchar(10))`.<br>8. Изменить размер поля `fio` на `varchar(25)`.<br>9. Добавить ключевое поле `id_s` в таблицу `samoletbid_p` в таблицу `passanger`.<br>10. Добавить внешний ключ `id_p` в таблицу `samolet` и добавить каскадирование.<br>11. Удалить поле `aircraft` из таблицы `samolet`.<br>12. Изменить имя таблицы `samolet` на `plane`.
+21. | 1. Создать таблицу `rever(name_r varchar(15))`.<br>2. Добавить поля `shirina int`, `glubina int`, `dlina int` в таблицу `rever`.<br>3. Переставить поле `dlina` после поля `name_r`.<br>4. Добавить простые индексы для полей `shirina`, `glubina`, `dlina`.<br>5. Добавить уникальный индекс для поля `name_r` в таблицу `rever`.<br>6. Создать таблицу `strana(nazv_svarchar(15), sqwere int)`.<br>7. Добавить первичные ключи `id_r int` в таблицу `rever` и `id_s` в таблицу `strana`.<br>8. Изменить имена и типы полей `shirina`, `glubina`, `dlina` на `width float(5,2)`, `depth float(5,2)`, `hight float(5,2)`.<br>9. Добавить уникальный индекс для поля `name_r`.<br>10. Добавить внешний ключ `id_s` в таблицу `rever` и добавить `ON UPDATE CASCADE`.<br>11. Удалить поле `sqwere` из таблицы `strana`.<br>12. Изменить имя таблицы `strana` на `country`.
+22. | 1. Создать таблицу `student(name_s varchar(15), n_pasp varchar(11))`.<br>2. Добавить в таблицу `student` три поля `patronymic varchar(15)`, `last_n varchar(15)`, `snbp int`.<br>3. Переместить поле `n_pasp` в конец списка полей таблицы `student`.<br>4. Добавить простой индекс для поля `name_s` таблицы `student`.<br>5. Добавить уникальный индекс для поля `n_pasp` таблицы `student`.<br>6. Создать таблицу `spec(name_specvarchar(15), kod varchar(4))`.<br>7. Изменить имя и тип поля `name_spec` на `specialnost varchar(25)`.<br>8. Добавить ключевые поля `id_stud int` в таблицу `student` и `id_spec int` в таблицу `spec`.<br>9. Добавить внешний ключ `id_spec` в таблицу `student`.<br>10. Изменить тип поля `stip` на `float(5,2)`.<br>11. Удалить поле `n_pasp` из таблицы `student` и `kod` из таблицы `spec`.<br>12. Изменить имя таблицы `spec` на `specialnost`.
+23. | 1. Создать таблицу `production(name_p varchar(20))`.<br>2. Добавить в таблицу `production` поля `kol int(4)`, `ves int(4)`, `cena int(5)`.<br>3. Добавить простой индекс для поля `name_p`.<br>4. Создать таблицу `postavshik(organizacia varchar(20))`.<br>5. Переместить поле `cena` перед полем `kol`.<br>6. Изменить имя и тип полей `kol` на `quantity float(5,2)`, `ves` на `weight float(5,3)` и `cena` на `price float(5,2)`.<br>7. Создать уникальный индекс для таблицы `organizacia`.<br>8. Добавить поле `address varchar(20)` в таблицу `postavshik`.<br>9. Добавить ключевое поле `id_p` в таблицу `production` и `id_post` в таблицу `postavshik`.<br>10. Добавить внешний ключ `id_post` в таблицу `production`.<br>11. Удалить поле `weight` и `quantity` из таблицы `production`.<br>12. Изменить имя таблицы `postavshik` на `provider`.
+24. | 1. Создать таблицу `platie(razmerint(2))`.<br>2. Добавить в таблицу `platie` поле `cena int`, `color varchar(15)`.<br>3. Добавить простой индекс для поля `cena`.<br>4. Создать таблицу `fashion(nazv_fvarchar(20))`.<br>5. Добавить ключевое поле `id_p` в таблицу `platie`.<br>6. Переставить поле `color` после `razmer` в таблице `platie`.<br>7. Добавить внешний ключ `id_f` в таблице `platie`.<br>8. Изменить имя и тип поля `cena` на `price float(5,2)`.<br>9. Добавить в таблицу `platie` поле `proizvoditel varchar(15)`.<br>10. Удалить поле `color` из таблицы `platie`.<br>11. Добавить уникальный индекс для поля `nazv_f` в таблицу `fashion`.<br>12. Изменить имя таблицы `platie` на `dress`.
+25. | 1. Создать таблицу `klient(fiovarchar(25))`.<br>2. Добавить в таблицу `klient` поля `n_pasp varchar(10), address varchar(20), pol varchar(15)`.<br>3. Добавить простой индекс для поля `fio` таблицы `klient`.<br>4. Добавить уникальный индекс для поля `n_pasp`.<br>5. Создать таблицу `prichoska(name_pvarchar(20), cena int(4))`.<br>6. Добавить ключевое поле `id_k` в таблицу `klient`.<br>7. Изменить имя и тип поля `cena` на `price float(5,2)` и `pol` на `sex char(1)` таблицы `klient`.<br>8. Переместить поле `sex` после поля `fio` таблицы `klient`.<br>9. Добавить внешний ключ `id_p` в таблицу `klient`.<br>10. Удалить поле `address` из таблицы `klient`.<br>11. Добавить простой индекс для поля `name_p` в таблице `prichoska`.<br>12. Изменить имя таблицы `prichoska` на `hairstyle`.
+26. | 1. Создать таблицу `spectakl(name varchar(20))`.<br>2. Добавить в таблицу `spectakl` поле `cena int`, `time int`.<br>3. Добавить уникальный индекс для поля `name`.<br>4. Добавить простой индекс для полей `cena` и `time`.<br>5. Изменить имя и тип полей `cena` на `price float(5,2)`, а `time` на `duration float(5,2)`.<br>6. Создать таблицу `regisser(fiovarchar(20), age int)`.<br>7. Создать ключевое поле `id_s` для таблицы `spectakl` и `id_r` для таблицы `regisser`.<br>8. Переставить поле `prodolgit` после поля `name` для таблицы `spectakl`.<br>9. Добавить внешний ключ `id_r` в таблицу `spectakl`.<br>10. Изменить тип поля `age` на `float(5,2)`.<br>11. Удалить поле `duration` из таблицы `spectakl`.<br>12. Изменить имя таблицы `spectakl` на `performance`.
+27. |	1. Создать таблицу `balet(name varchar(20))`.<br>2. Добавить в таблицу `balet` поля `cena int`, `time int` и `raiting varchar(3)`.<br>3. Добавить уникальный индекс для поля `name` таблицы `balet`.<br>4. Добавить простой индекс для поля `cena` и `raiting`.<br>5. Изменить имя и тип полей cenaна `budget float(5,2)` и `raiting` на `rating int`.<br>6. Создать таблицу `regisser(fiovarchar(20), datab date)`.<br>7. Создать ключевое поле `id_b` для таблицы `balet` и `id_r` для таблицы `regisser`.<br>8. Переставить поле `rating` после поля `name`.<br>9. Добавить внешний ключ `id_r` в таблицу `balet`.<br>10. Изменить тип поля ageна `float(5,2)`.<br>11. Удалить поле `rating` из таблицы `balet`.<br>12. Изменить имя таблицы `regisser` на `producer`.
+28. | 1. Создать таблицу `uchastok(ploshad int, cena int)`.<br>2. Добавить в таблицу `uchastok` поле `rever varchar(2)` и `land varchar(2)`.<br>3. Добавить в таблицу `uchastok` простые индексы для поля `ploshad` и `cena`.<br>4. Создать таблицу `hoziain(fiovarchar(20), n_pasp)`.<br>5. Добавить уникальный индекс `hoziain` в таблицу `hoziain` для поля `fio`.<br>6. Добавит ключевое поле `id_u` в таблицу `uchastok` и `id_h` в таблицу `hoziain`.<br>7. Изменить имя и тип поля `ploshad` на `aquare float(5,2)` и `cena` на `price float(5,2)`.<br>8. Добавить внешний ключ `id_h` в таблицу `uchastok`.<br>9. Переставить поле cenaв конец списка полей таблицы `uchastok`.<br>10. Добавить уникальный индекс для поля `n_pasp` для таблицы `hoziain`.<br>11. Удалить поле reverиз таблицы `uchastok`.<br>12. Изменить имя таблицы `uchastok` на `plot` и таблицы `hoziain` на `master`.
+29. | 1. Создать таблицу `marka(name varchar(20), razmer vatchar(5))`.<br>2. Добавить в таблицу `marka` поля `cena int, stranavarchar(15), god int(4)`.<br>3. Добавить простой индекс для поля `god` и `cena` в таблицу `marka`.<br>4. Добавить уникальный индекс для поля `name`.<br>5. Создать таблицу `tema(name_tvarchar(20))`.<br>6. Добавить ключевое поле `id_m` в таблицу `marka` и `id_t` в таблицу `tema`.<br>7. Изменить имя и тип поля `cena` на `price float(5,2)` и `god` на `god_s year, cena` на `nominal float(5,2)`.8. Добавить внешний ключ `id_t` в таблицу `marka`.<br>9. Переставить поле `god_s` перед полем `razmer`.<br>10. Добавить уникальный индекс для поля `name_t` таблицы `tema`.<br>11. Удалить поле `strana` из таблицы `marka`.<br>12. Изменить имя таблицы `marka` на `mark` и таблицы `tema` на `theme`.
+30. | 1. Создать таблицу `tel(razmer_e varchar(2))`.<br>2. Добавить в таблицу `tel` поля `pam varchar(2)`, `processor int`, `op int`, `gps varchar(1)`.<br>3. Изменить имя и тип поля `pam` на `memory int(2)`, `processor` на `cpu float(2,1)` и `op` на `ram float(2,1)`.<br>4. Добавить простой индекс для поля `memory` и `cpu` в таблицу `tel`.<br>5. Создать таблицу `tema(name varchar(15))`.<br>6. Добавить уникальный индекс для поля `name` таблицы `tema`.<br>7.  Переставить поле `cpu` после `razmer_e` в таблице `tel`.<br>8. Добавить в таблицу `tel` ключевое поле `id_t`, а в таблицу `tema` `id_t`.<br>9. Добавить внешний ключ `id_t` в таблицу `tel`.<br>10. Изменить размер поля `name` на `varchar (25)`.<br>11. Удалить поле `gps` из таблицы `tel`.<br>12. Изменить имя таблицы `tel` на `mobile_fone`, а таблицы `tema` на `theme`.
