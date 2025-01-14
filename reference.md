@@ -2,8 +2,12 @@
 
 - [Basic Commands](#basic-commands)
   - [Database](#database)
-    - [Showing db's](#showing-dbs)
+    - [Showing databases](#showing-databases)
+      - [Show all dbs](#show-all-dbs)
+      - [Show specific database](#show-specific-database)
+      - [Show current database](#show-current-database)
     - [Creating db](#creating-db)
+    - [Show database params](#show-database-params)
     - [Activating db](#activating-db)
     - [Deleting db](#deleting-db)
   - [Работа с таблицами](#работа-с-таблицами)
@@ -12,6 +16,13 @@
     - [Показать структуру](#показать-структуру)
     - [Переименование таблицы](#переименование-таблицы)
     - [Полное удаление данных (очистка таблицы)](#полное-удаление-данных-очистка-таблицы)
+      - [`DELETE` vs. `TRUNCATE`](#delete-vs-truncate)
+        - [`DELETE`](#delete)
+        - [`TRUNCATE`](#truncate)
+        - [Comparison](#comparison)
+        - [Difference](#difference)
+        - [FASTER](#faster)
+        - [Where to USE](#where-to-use)
     - [Удаление таблицы](#удаление-таблицы)
   - [Работа с полями/столбцами](#работа-с-полямистолбцами)
     - [Показать столбцы (колонки)](#показать-столбцы-колонки)
@@ -55,20 +66,72 @@
   - [Добавление и удаление внешнего ключа](#добавление-и-удаление-внешнего-ключа)
   - [Добавление и удаление первичного ключа](#добавление-и-удаление-первичного-ключа)
 - [Основные операции с данными](#основные-операции-с-данными)
-  - [Добавление данных. Команда INSERT](#добавление-данных-команда-insert)
+  - [Добавление данных. Команда `INSERT`](#добавление-данных-команда-insert)
     - [Множественное добавление](#множественное-добавление)
-  - [Выборка данных. Команда SELECT](#выборка-данных-команда-select)
-  - [Фильтрация данных. Оператор WHERE](#фильтрация-данных-оператор-where)
-
+  - [Выборка данных. Команда `SELECT`](#выборка-данных-команда-select)
+  - [Исключение дубликатов. Оператор `DISTINCT`](#исключение-дубликатов-оператор-distinct)
+    - [Count Distinct](#count-distinct)
+  - [Ограничение размера выборки. Оператор `LIMIT`](#ограничение-размера-выборки-оператор-limit)
+  - [Фильтрация данных. Оператор `WHERE`](#фильтрация-данных-оператор-where)
+    - [Text Fields vs. Numeric Fields](#text-fields-vs-numeric-fields)
+    - [Operators in The `WHERE` Clause](#operators-in-the-where-clause)
+  - [Упорядочивание (сортировка) данных. Оператор `ORDER BY`](#упорядочивание-сортировка-данных-оператор-order-by)
+    - [`DESC`](#desc)
+    - [Order Alphabetically](#order-alphabetically)
+    - [`ORDER BY` Several Columns](#order-by-several-columns)
+    - [Using Both `ASC` and `DESC`](#using-both-asc-and-desc)
+- [Агрегатные функции / Aggregate Functions](#агрегатные-функции--aggregate-functions)
+  - [`COUNT`](#count)
+  - [`MIN()` and `MAX()` Functions](#min-and-max-functions)
+  - [`SUM()`](#sum)
+- [Error handling](#error-handling)
+- [## Run scripts](#-run-scripts)
 
 ## Basic Commands
 
 ### Database
 
-#### Showing db's
+#### Showing databases
 
+##### Show all dbs
 ```sql
 SHOW DATABASES;
+```
+
+##### Show specific database
+via `SHOW DATABASES`:
+```sql
+SHOW DATABASES LIKE '<database_name>';
+```
+
+via `INFORMATION_SCHEMA`:
+```sql
+SELECT SCHEMA_NAME
+  FROM INFORMATION_SCHEMA.SCHEMATA
+  WHERE SCHEMA_NAME = '<database_name>';
+```
+
+
+##### Show current database
+
+https://dev.mysql.com/doc/refman/8.4/en/getting-information.html
+
+To find out which database is currently selected, use the `DATABASE()` function:
+```sql
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| menagerie  |
++------------+
+```
+
+If you have indexes on a table, `SHOW INDEX FROM tbl_name` produces information about them. See Section 15.7.7.23, “SHOW INDEX Statement”, for more about this statement.
+
+Show procedures for a given database:
+```sql
+SHOW PROCEDURE STATUS
+    WHERE Db = DATABASE() AND Type = 'PROCEDURE';
 ```
 
 #### Creating db
@@ -77,10 +140,28 @@ SHOW DATABASES;
 CREATE DATABASE [IF NOT EXISTS] <db_name>;
 ```
 
+#### Show database params
+```sql
+SHOW CREATE DATABASE <db_name>;
+```
+
 #### Activating db
 
 ```sql
 USE <db_name>
+```
+
+Установка базы данных в качестве текущей с проверкой:
+```sql
+mysql> USE mysql
+Database changed
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| mysql      |
++------------+
+1 row in set (0.00 sec)
 ```
 
 #### Deleting db
@@ -112,7 +193,13 @@ CREATE TABLE название_таблицы
 #### Показать структуру
 
 ```sql
-DESCRIBE <название_таблицы>
+DESCRIBE <название_таблицы>;
+```
+
+OR:
+```sql
+SHOW COLUMNS FROM <table_name>;
+SHOW COLUMNS IN <table_name>;
 ```
 
 #### Переименование таблицы
@@ -132,6 +219,53 @@ ALTER TABLE <старое_название> RENAME <новое_название>
 ```sql
 TRUNCATE TABLE <название_таблицы>;
 ```
+
+OR:
+
+```sql
+DELETE FROM <table_name>;
+```
+
+##### `DELETE` vs. `TRUNCATE`
+[comparison of truncate vs delete in mysql/sqlserver](
+https://stackoverflow.com/questions/20559893/comparison-of-truncate-vs-delete-in-mysql-sqlserver)
+
+###### `DELETE`
+
+- `DELETE` is a DML Command.
+- `DELETE` statement is executed using a row lock, each row in the table is locked for deletion.
+- We can specify filters in where clause
+- It deletes specified data if where condition exists.
+- Delete activates a trigger because the operation are logged individually.
+- Slower than truncate because, it keeps logs.
+- Rollback is possible.
+
+###### `TRUNCATE`
+
+- `TRUNCATE` is a DDL command.
+- `TRUNCATE TABLE` always locks the table and page but not each row.
+- Cannot use Where Condition.
+- It Removes all the data.
+- `TRUNCATE TABLE` cannot activate a trigger because the operation does not log individual row deletions.
+- Faster in performance wise, because it doesn't keep any logs.
+- Rollback is possible.
+
+###### Comparison
+- `DELETE` and `TRUNCATE` both can be rolled back when used with `TRANSACTION` (`TRUNCATE` can be rolled back in SQL Server, but not in MySQL).
+- if there is a PK with auto increment, truncate will reset the counter (which is not the case while using `DELETE`).
+
+###### Difference
+The most important difference is `DELETE` operations are transaction-safe and logged, which means `DELETE` can be rolled back. `TRUNCATE` cannot be done inside a transaction and can’t be rolled back. Because `TRUNCATE` is not logged recovering a mistakenly TRUNCATEd table is a much bigger problem than recovering from a `DELETE`.
+
+`DELETE` will fail if foreign key constraints are broken; `TRUNCATE` may not honor foreign key constraints (it does for InnoDB tables). `DELETE` will fire any `ON DELETE` triggers; `TRUNCATE` will not.
+
+###### FASTER
+Truncate operations drop and re-create the table, which is much faster than deleting rows one by one, particularly for large tables.
+
+###### Where to USE
+- truncate: when table set to empty, and need reset auto-incrementing keys to 1. It's faster than `DELETE` because it deletes all data. `DELETE` will scan the table to generate a count of rows that were affected.
+
+- delete: need rows to delete based on an optional `WHERE` clause. need logs and apply foreign key constraints
 
 #### Удаление таблицы
 
@@ -777,13 +911,13 @@ DROP PRIMARY KEY;
 
 ## Основные операции с данными
 
-### Добавление данных. Команда INSERT
-Для добавления данных в БД в MySQL используется команда **INSERT**, которая имеет следующий формальный синтаксис:
+### Добавление данных. Команда `INSERT`
+Для добавления данных в БД в MySQL используется команда **`INSERT`**, которая имеет следующий формальный синтаксис:
 ```sql
 INSERT [INTO] имя_таблицы [(список_столбцов)] VALUES (значение1, значение2, ... значениеN)
 ```
 
-После выражения **INSERT INTO** в скобках можно указать список столбцов через запятую, в которые надо добавлять данные, и в конце после слова **VALUES** скобках перечисляют добавляемые для столбцов значения.
+После выражения **`INSERT INTO`** в скобках можно указать список столбцов через запятую, в которые надо добавлять данные, и в конце после слова **VALUES** скобках перечисляют добавляемые для столбцов значения.
 
 Например, пусть в базе данных productsdb есть следующая таблица Products:
 ```sql
@@ -843,10 +977,15 @@ VALUES
 
 В данном случае в таблицу будут добавлены три строки.
 
-### Выборка данных. Команда SELECT
+### Выборка данных. Команда `SELECT`
 Для выборки данных из БД в MySQL применяется команда **`SELECT`**. В упрощенном виде она имеет следующий синтаксис:
 ```sql
-SELECT список_столбцов FROM имя_таблицы
+SELECT [DISTINCT] column_name(s)
+FROM table_name
+WHERE condition
+ORDER BY column1, column2, ... [ASC|DESC];
+HAVING condition
+LIMIT number;
 ```
 
 Например, пусть ранее была создана таблица `Products`, и в нее добавлены некоторые начальные данные:
@@ -915,12 +1054,44 @@ FROM Products;
 
 Здесь для первого столбца определяется псевдоним Title, хотя в реальности он будет представлять столбец ProductName. Второй столбец TotalSum хранит произведение столбцов ProductCount и Price.
 
-### Фильтрация данных. Оператор WHERE
-Зачастую необходимо извлекать не все данные из БД, а только те, которые соответствуют определенному условию. Для фильтрации данных в команде `SELECT` применяется оператор `WHERE`, после которого указывается условие:
+### Исключение дубликатов. Оператор `DISTINCT`
+The `SELECT DISTINCT` statement is used to return only distinct (different) values.
+
 ```sql
-WHERE условие
+SELECT DISTINCT column1, column2, ...
+FROM table_name;
 ```
 
+!!! example Example
+
+*Select all the different countries from the "Customers" table:*
+```sql
+SELECT DISTINCT Country FROM Customers;
+```
+
+#### Count Distinct
+By using the `DISTINCT` keyword in a function called `COUNT`, we can return the number of different countries.
+
+!!! example Example
+```sql
+SELECT COUNT(DISTINCT Country) FROM Customers;
+```
+
+### Ограничение размера выборки. Оператор `LIMIT`
+Для ограничения
+
+### Фильтрация данных. Оператор `WHERE`
+Зачастую необходимо извлекать не все данные из БД, а только те, которые соответствуют определенному условию. Для фильтрации данных в команде `SELECT` применяется оператор `WHERE`, после которого указывается условие:
+```sql
+SELECT column1, column2, ...
+FROM table_name
+WHERE condition;
+```
+
+#### Text Fields vs. Numeric Fields
+SQL requires single quotes around text values (most database systems will also allow double quotes).
+
+#### Operators in The `WHERE` Clause
 Если условие истинно, то строка попадает в результирующую выборку. В качестве можно использовать операции сравнения, которые сравнивают два выражения:
 
 - **`=`**: сравнение на равенство
@@ -939,3 +1110,358 @@ WHERE условие
 
 К примеру, выберем всех товары, производителем которых является компания Samsung:
 
+### Упорядочивание (сортировка) данных. Оператор `ORDER BY`
+The `ORDER BY` keyword is used to sort the result-set in ascending or descending order.
+
+```sql
+SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1, column2, ... [ASC|DESC];
+```
+
+#### `DESC`
+The `ORDER BY` keyword sorts the records in ascending order by default. To sort the records in descending order, use the `DESC` keyword.
+
+!!! example Example
+
+*Sort the products from highest to lowest price:*
+```sql
+SELECT * FROM Products
+ORDER BY Price DESC;
+```
+
+#### Order Alphabetically
+For string values the `ORDER BY` keyword will order alphabetically:
+
+!!! example Example
+
+*Sort the products alphabetically by `ProductName`:*
+```sql
+SELECT * FROM Products
+ORDER BY ProductName;
+```
+
+To sort the table reverse alphabetically, use the `DESC` keyword:
+
+!!! example Example
+
+*Sort the products by `ProductName` in reverse order:*
+```sql
+SELECT * FROM Products
+ORDER BY ProductName DESC;
+```
+
+#### `ORDER BY` Several Columns
+The following SQL statement selects all customers from the "Customers" table, sorted by the "Country" and the "CustomerName" column. This means that it orders by `Country`, but if some rows have the same `Country`, it orders them by `CustomerName`:
+
+!!! example Example
+
+```sql
+SELECT * FROM Customers
+ORDER BY Country, CustomerName;
+```
+
+#### Using Both `ASC` and `DESC`
+The following SQL statement selects all customers from the "Customers" table, sorted ascending by the "Country" and descending by the "CustomerName" column:
+
+!!! example Example
+
+```sql
+SELECT * FROM Customers
+ORDER BY Country ASC, CustomerName DESC;
+```
+
+## Агрегатные функции / Aggregate Functions
+An aggregate function is a function that performs a calculation on a set of values, and returns a single value.
+
+Aggregate functions are often used with the `GROUP BY` clause of the `SELECT` statement. The `GROUP BY` clause splits the result-set into groups of values and the aggregate function can be used to return a single value for each group.
+
+The most commonly used SQL aggregate functions are:
+
+- `MIN()` — returns the smallest value within the selected column
+- `MAX()` — returns the largest value within the selected column
+- `COUNT()` — returns the number of rows in a set
+- `SUM()` — returns the total sum of a numerical column
+- `AVG()` — returns the average value of a numerical column
+
+> Aggregate functions ignore null values (except for `COUNT()`).
+
+### `COUNT`
+The `COUNT()` function returns the number of rows that matches a specified criterion.
+
+```sql
+SELECT COUNT(column_name) [AS alias]
+FROM table_name
+WHERE condition;
+```
+
+!!! example Example
+
+*Find the total number of rows in the `Products` table:*
+```sql
+SELECT COUNT(*)
+FROM Products;
+```
+
+You can specify a column name instead of the asterix symbol `(*)`.
+
+If you specify a column name instead of `(*)`, NULL values will not be counted.
+
+!!! example Example
+
+*Find the number of products where the `ProductName` is not null:*
+```sql
+SELECT COUNT(ProductName)
+FROM Products;
+```
+
+You can add a `WHERE` clause to specify conditions:
+
+!!! example Example
+
+*Find the number of products where `Price` is higher than 20:*
+```sql
+SELECT COUNT(ProductID)
+FROM Products
+WHERE Price > 20;
+```
+
+You can ignore duplicates by using the `DISTINCT` keyword in the `COUNT()` function.
+
+If `DISTINCT` is specified, rows with the same value for the specified column will be counted as one.
+
+!!! example Example
+
+*How many **different** prices are there in the `Products` table:*
+```sql
+SELECT COUNT(DISTINCT Price)
+FROM Products;
+```
+
+Give the counted column a name by using the `AS` keyword.
+
+!!! example Example
+
+*Name the column "Number of records":*
+```sql
+SELECT COUNT(*) AS [Number of records]
+FROM Products;
+```
+
+Here we use the `COUNT()` function and the `GROUP BY` clause, to return the number of records for each category in the Products table:
+
+!!! example Example
+
+```sql
+SELECT COUNT(*) AS [Number of records], CategoryID
+FROM Products
+GROUP BY CategoryID;
+```
+
+### `MIN()` and `MAX()` Functions
+The `MIN()` function returns the smallest value of the selected column.
+
+```sql
+SELECT MIN(column_name) [AS alias]
+FROM table_name
+WHERE condition;
+```
+
+The `MAX()` function returns the largest value of the selected column.
+
+```sql
+SELECT MAX(column_name) [AS alias]
+FROM table_name
+WHERE condition;
+```
+!!! example Example
+
+*Use the `MIN()` function with alias*
+
+```sql
+SELECT MIN(Price) AS SmallestPrice
+FROM Products;
+```
+
+!!! example Example
+
+*Use the `MIN()` function and the `GROUP BY` clause:*
+
+```sql
+SELECT MIN(Price) AS SmallestPrice, CategoryID
+FROM Products
+GROUP BY CategoryID;
+```
+
+### `SUM()`
+The `SUM()` function returns the total sum of a numeric column.
+
+```sql
+SELECT SUM(column_name) [AS alias]
+FROM table_name
+WHERE condition;
+```
+
+You can add a `WHERE` clause to specify conditions:
+
+!!! example Example
+
+*Return the sum of the `Quantity` field for the product with `ProductID` 11:*
+```sql
+SELECT SUM(Quantity)
+FROM OrderDetails
+WHERE ProductId = 11;
+```
+
+!!! example Example
+
+*Name the column "total":*
+```sql
+SELECT SUM(Quantity) AS total
+FROM OrderDetails;
+```
+
+Here we use the `SUM()` function and the `GROUP BY` clause, to return the `Quantity` for each `OrderID` in the OrderDetails table:
+
+!!! example Example
+
+```sql
+SELECT OrderID, SUM(Quantity) AS [Total Quantity]
+FROM OrderDetails
+GROUP BY OrderID;
+```
+
+The parameter inside the `SUM()` function can also be an expression.
+
+If we assume that each product in the `OrderDetails` column costs 10 dollars, we can find the total earnings in dollars by multiply each quantity with 10:
+
+!!! example Example
+
+*Use an expression inside the `SUM()` function:*
+```sql
+SELECT SUM(Quantity * 10)
+FROM OrderDetails;
+```
+
+We can also join the `OrderDetails` table to the `Products` table to find the actual amount, instead of assuming it is 10 dollars:
+
+!!! example Example
+
+*Join `OrderDetails` with `Products`, and use `SUM()` to find the total amount:*
+```sql
+SELECT SUM(Price * Quantity)
+FROM OrderDetails
+LEFT JOIN Products ON OrderDetails.ProductID = Products.ProductID;
+```
+
+## Error handling
+
+
+   ```sql
+   DELIMITER //
+
+   CREATE PROCEDURE add_player(
+      IN p_full_name VARCHAR(255),
+      IN p_age INT,
+      IN p_gender ENUM('m', 'f'),
+      IN p_city_id INT UNSIGNED,
+      IN p_category_title VARCHAR(100)
+   )
+   BEGIN
+      DECLARE v_category_id INT UNSIGNED;
+      DECLARE v_result_message VARCHAR(255);
+
+      -- Получаем ID титула по его названию
+      SELECT id INTO v_category_id
+         FROM category
+         WHERE title = p_category_title;
+
+    -- Проверяем, найден ли титул
+    IF v_category_id IS NOT NULL THEN
+      -- Добавляем нового шахматиста в таблицу players
+        INSERT INTO player (full_name, age, gender, city_id, category_id)
+        VALUES (p_full_name, p_age, p_gender, p_city_id, v_category_id);
+        IF ROW_COUNT() > 0 THEN
+            SET v_result_message = 'Игрок успешно добавлен.';
+        ELSE
+            SET v_result_message = 'Ошибка: Игрок не был добавлен.';
+        END IF;
+      ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Звание не найдено';
+    END IF;
+
+    -- Возврат сообщения о результате операции
+    SELECT v_result_message AS result_message;
+   END //
+
+   DELIMITER ;
+
+   CALL add_player('Каспаров Гарри Каримович', 61, 'm', 5, 'чемпион мира');
+   ```
+
+Строка SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Титул не найден'; используется в MySQL для генерации пользовательского исключения. Давайте разберем её по частям:
+1. `SIGNAL SQLSTATE '45000'`
+   - `SIGNAL`: Это оператор, который используется для создания ошибок или предупреждений в хранимых процедурах, триггерах и функциях.
+   - `SQLSTATE '45000'`: Этот код обозначает "необработанное определяемое пользователем исключение". Он используется для сигнализации об ошибках, которые не соответствуют стандартным состояниям ошибок SQL. Код '45000' является общепринятым для пользовательских исключений и позволяет разработчикам явно указывать, что произошла ошибка, которую они сами определили.
+2. `SET MESSAGE_TEXT = 'Титул не найден'`
+   - `SET MESSAGE_TEXT`: Эта часть устанавливает текст сообщения, которое будет возвращено вместе с исключением. Это сообщение будет отображаться пользователю или системе, вызывающей процедуру.
+   - `'Титул не найден'`: Это конкретное сообщение об ошибке, которое объясняет причину возникновения исключения. В данном случае оно указывает на то, что запрашиваемый титул шахматиста не был найден в базе данных.
+
+Применение
+
+Использование этой строки позволяет разработчикам:
+- Обрабатывать ошибки более информативно, предоставляя пользователям ясные сообщения о том, что пошло не так.
+- Упрощать отладку и улучшать взаимодействие с пользователями, так как они получают конкретную информацию о проблемах.
+
+Таким образом, эта конструкция является важным инструментом для управления ошибками в MySQL и помогает поддерживать качество и надежность баз данных.
+
+Общие классы и примеры SQLSTATE
+1. Класс **`00`**: Успешное выполнение / Success
+   - `00000`: Успешное завершение операции.
+2. Класс **`01`**: Предупреждение / Warning
+   - `01000`: Общее предупреждение.
+3. Класс **`02`**: Нет данных / Not found
+   - `02000`: Нет данных (например, при выполнении запроса, который не вернул результатов).
+
+**Exceptions**
+
+4. Класс **`23`**: Нарушение ограничений
+   - `23000`: Нарушение ограничения уникальности.
+   - `23505`: Дублирование значения в уникальном поле.
+5. Класс **`42`**: Синтаксическая ошибка или нарушение доступа
+   - `42000`: Синтаксическая ошибка в SQL-запросе.
+   - `42601`: Ошибка синтаксиса.
+6. Класс **`28`**: Неправильная аутентификация
+   - `28000`: Неправильные учетные данные для доступа к базе данных.
+7. Класс **`P0`**: Процедурные ошибки логики
+   - `P0001`: Создание пользовательского исключения.
+   - `P0002`: Ошибка в логике процедуры.
+
+Примеры пользовательских исключений
+
+Пользователь может определить собственные значения SQLSTATE, используя диапазоны, например:
+- `45000` — общая ошибка, определяемая пользователем, как в вашем примере.
+- Другие коды могут быть определены в зависимости от специфики приложения и его требований.
+
+## ## Run scripts
+https://stackoverflow.com/questions/8940230/how-to-run-sql-script-in-mysql
+
+If you’re at the MySQL command line `mysql>` you have to declare the SQL file as source.
+```
+mysql> source \home\user\Desktop\test.sql;
+```
+
+Use the MySQL command line client:
+```
+mysql -h hostname -u user database < path/to/test.sql
+```
+
+The other option to do that will be: `mysql --user="username" --database="databasename" --password="yourpassword" < "filepath"`:
+```
+mysql -u yourusername -p yourpassword a_new_database_name < text_file
+```
+
+All the top answers are good. But just in case someone wants to run the query from a text file on a remote server **AND** save results to a file (instead of showing on console), you can do this:
+```
+mysql -u yourusername -p yourpassword yourdatabase < query_file > results_file
+```
