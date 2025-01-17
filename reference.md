@@ -84,8 +84,20 @@
   - [`COUNT`](#count)
   - [`MIN()` and `MAX()` Functions](#min-and-max-functions)
   - [`SUM()`](#sum)
-- [Error handling](#error-handling)
-- [## Run scripts](#-run-scripts)
+- [Procedure Handlers](#procedure-handlers)
+  - [Handle successful operation](#handle-successful-operation)
+  - [Handle duplicated entries, unexpected exceptions](#handle-duplicated-entries-unexpected-exceptions)
+  - [Capture error messages](#capture-error-messages)
+  - [Roll back](#roll-back)
+  - [`NOT FOUND` handler and `DELETE`](#not-found-handler-and-delete)
+    - [Alternative Approach](#alternative-approach)
+- [Using `FOUND_ROWS()`](#using-found_rows)
+- [Regular expressions (`REGEXP()`)](#regular-expressions-regexp)
+  - [Using Backslash](#using-backslash)
+    - [Example Breakdown](#example-breakdown)
+    - [Summary of Why Double Backslashes Are Needed](#summary-of-why-double-backslashes-are-needed)
+    - [Conclusion](#conclusion)
+- [Run scripts](#run-scripts)
 
 ## Basic Commands
 
@@ -1354,52 +1366,53 @@ FROM OrderDetails
 LEFT JOIN Products ON OrderDetails.ProductID = Products.ProductID;
 ```
 
-## Error handling
+## Procedure Handlers
 
+### Handle successful operation
 
-   ```sql
-   DELIMITER //
+```sql
+DELIMITER //
 
-   CREATE PROCEDURE add_player(
-      IN p_full_name VARCHAR(255),
-      IN p_age INT,
-      IN p_gender ENUM('m', 'f'),
-      IN p_city_id INT UNSIGNED,
-      IN p_category_title VARCHAR(100)
-   )
-   BEGIN
-      DECLARE v_category_id INT UNSIGNED;
-      DECLARE v_result_message VARCHAR(255);
+CREATE PROCEDURE add_player(
+  IN p_full_name VARCHAR(255),
+  IN p_age INT,
+  IN p_gender ENUM('m', 'f'),
+  IN p_city_id INT UNSIGNED,
+  IN p_category_title VARCHAR(100)
+)
+BEGIN
+  DECLARE v_category_id INT UNSIGNED;
+  DECLARE v_result_message VARCHAR(255);
 
-      -- Получаем ID титула по его названию
-      SELECT id INTO v_category_id
-         FROM category
-         WHERE title = p_category_title;
+  -- Получаем ID титула по его названию
+  SELECT id INTO v_category_id
+      FROM category
+      WHERE title = p_category_title;
 
-    -- Проверяем, найден ли титул
-    IF v_category_id IS NOT NULL THEN
-      -- Добавляем нового шахматиста в таблицу players
-        INSERT INTO player (full_name, age, gender, city_id, category_id)
-        VALUES (p_full_name, p_age, p_gender, p_city_id, v_category_id);
-        IF ROW_COUNT() > 0 THEN
-            SET v_result_message = 'Игрок успешно добавлен.';
-        ELSE
-            SET v_result_message = 'Ошибка: Игрок не был добавлен.';
-        END IF;
-      ELSE
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Звание не найдено';
+-- Проверяем, найден ли титул
+IF v_category_id IS NOT NULL THEN
+  -- Добавляем нового шахматиста в таблицу players
+    INSERT INTO player (full_name, age, gender, city_id, category_id)
+    VALUES (p_full_name, p_age, p_gender, p_city_id, v_category_id);
+    IF ROW_COUNT() > 0 THEN
+        SET v_result_message = 'Игрок успешно добавлен.';
+    ELSE
+        SET v_result_message = 'Ошибка: Игрок не был добавлен.';
     END IF;
+  ELSE
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Звание не найдено';
+END IF;
 
-    -- Возврат сообщения о результате операции
-    SELECT v_result_message AS result_message;
-   END //
+-- Возврат сообщения о результате операции
+SELECT v_result_message AS result_message;
+END //
 
-   DELIMITER ;
+DELIMITER ;
 
-   CALL add_player('Каспаров Гарри Каримович', 61, 'm', 5, 'чемпион мира');
-   ```
+CALL add_player('Каспаров Гарри Каримович', 61, 'm', 5, 'чемпион мира');
+```
 
-Строка SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Титул не найден'; используется в MySQL для генерации пользовательского исключения. Давайте разберем её по частям:
+Строка `SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Титул не найден';` используется в MySQL для генерации пользовательского исключения. Давайте разберем её по частям:
 1. `SIGNAL SQLSTATE '45000'`
    - `SIGNAL`: Это оператор, который используется для создания ошибок или предупреждений в хранимых процедурах, триггерах и функциях.
    - `SQLSTATE '45000'`: Этот код обозначает "необработанное определяемое пользователем исключение". Он используется для сигнализации об ошибках, которые не соответствуют стандартным состояниям ошибок SQL. Код '45000' является общепринятым для пользовательских исключений и позволяет разработчикам явно указывать, что произошла ошибка, которую они сами определили.
@@ -1407,7 +1420,7 @@ LEFT JOIN Products ON OrderDetails.ProductID = Products.ProductID;
    - `SET MESSAGE_TEXT`: Эта часть устанавливает текст сообщения, которое будет возвращено вместе с исключением. Это сообщение будет отображаться пользователю или системе, вызывающей процедуру.
    - `'Титул не найден'`: Это конкретное сообщение об ошибке, которое объясняет причину возникновения исключения. В данном случае оно указывает на то, что запрашиваемый титул шахматиста не был найден в базе данных.
 
-Применение
+*Применение*
 
 Использование этой строки позволяет разработчикам:
 - Обрабатывать ошибки более информативно, предоставляя пользователям ясные сообщения о том, что пошло не так.
@@ -1415,7 +1428,7 @@ LEFT JOIN Products ON OrderDetails.ProductID = Products.ProductID;
 
 Таким образом, эта конструкция является важным инструментом для управления ошибками в MySQL и помогает поддерживать качество и надежность баз данных.
 
-Общие классы и примеры SQLSTATE
+Общие классы и примеры `SQLSTATE`
 1. Класс **`00`**: Успешное выполнение / Success
    - `00000`: Успешное завершение операции.
 2. Класс **`01`**: Предупреждение / Warning
@@ -1437,13 +1450,254 @@ LEFT JOIN Products ON OrderDetails.ProductID = Products.ProductID;
    - `P0001`: Создание пользовательского исключения.
    - `P0002`: Ошибка в логике процедуры.
 
-Примеры пользовательских исключений
+*Примеры пользовательских исключений*
 
-Пользователь может определить собственные значения SQLSTATE, используя диапазоны, например:
+Пользователь может определить собственные значения `SQLSTATE`, используя диапазоны, например:
 - `45000` — общая ошибка, определяемая пользователем, как в вашем примере.
 - Другие коды могут быть определены в зависимости от специфики приложения и его требований.
 
-## ## Run scripts
+### Handle duplicated entries, unexpected exceptions
+
+```sql
+DELIMITER //
+
+CREATE PROCEDURE AddGenre(IN title VARCHAR(63), OUT added_id INT UNSIGNED)
+BEGIN
+    DECLARE affected_rows INT UNSIGNED DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR 1062
+    BEGIN
+        SELECT CONCAT("Duplicate entry for '", title, "'") AS `Error (duplicate)`;
+    END;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SELECT CONCAT("Error adding the genre ", title) AS `Error (unexpected)`;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO genre VALUE (DEFAULT, title);
+    SET affected_rows = ROW_COUNT();
+    SET added_id = LAST_INSERT_ID();
+    SELECT CONCAT("Successfully added the genre '", title, "' with ID: ", added_id) AS Success;
+
+    COMMIT;
+
+END//
+
+DELIMITER ;
+
+CALL AddGenre('фантастика', @created_id);
+
+SELECT @created_id;
+
+DROP PROCEDURE AddGenre;
+```
+
+### Capture error messages
+In MySQL, you can capture error messages in a stored procedure using the GET DIAGNOSTICS statement within an error handler. This allows you to retrieve information about the error that occurred, such as the SQLSTATE value and the error message.
+
+*Example of Capturing Error Messages in a Stored Procedure*
+
+Here’s how you can define a stored procedure that captures error messages when an exception occurs:
+```sql
+DELIMITER //
+
+CREATE PROCEDURE example_procedure()
+BEGIN
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Declare variables to hold error information
+        DECLARE v_sqlstate CHAR(5);
+        DECLARE v_errno INT;
+        DECLARE v_message TEXT;
+
+        -- Get diagnostics information
+        GET DIAGNOSTICS CONDITION 1
+            v_sqlstate = RETURNED_SQLSTATE,
+            v_errno = MYSQL_ERRNO,
+            v_message = MESSAGE_TEXT;
+
+        -- You can log the error or handle it as needed
+        SELECT CONCAT('SQLSTATE: ', v_sqlstate, ', Error Number: ', v_errno, ', Message: ', v_message) AS error_info;
+    END;
+
+    -- Example operation that may cause an error
+    -- Attempt to insert a duplicate key (for demonstration)
+    INSERT INTO some_table (id, name) VALUES (1, 'Sample Name');
+END //
+
+DELIMITER ;
+```
+
+### Roll back
+
+If you define exit handler for SQLException, it will roll back the transaction SILENTLY, getting `Query OK, 0 rows affected (0.00 sec)` message:
+
+```sql
+DELIMITER //
+
+CREATE PROCEDURE AddBrand(IN brand_title VARCHAR(31), OUT added_id INT UNSIGNED)
+BEGIN
+
+    DECLARE exit handler FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO brand VALUE (DEFAULT, brand_title);
+    SET added_id = LAST_INSERT_ID();
+    SELECT CONCAT("Successfully added the entry '", brand_title, "' with ID: ", added_id) AS Success;
+
+    COMMIT;
+END//
+
+DELIMITER ;
+```
+
+### `NOT FOUND` handler and `DELETE`
+In MySQL, the NOT FOUND condition is a specific type of handler that is used primarily for managing situations where a query does not return any rows, particularly in the context of cursors. 
+
+Consider this case with the `DELETE` statement:
+```sql
+DELIMITER //
+
+CREATE PROCEDURE DeleteBrand(IN brand_id INT UNSIGNED, OUT deleted_id INT UNSIGNED)
+BEGIN
+
+    DECLARE EXIT HANDLER FOR NOT FOUND
+    BEGIN
+        SELECT "Not found";
+    END;
+
+    DELETE FROM brand WHERE id = brand_id;
+END//
+
+DELIMITER ;
+```
+
+The `NOT FOUND` handler is not triggered for the following reasons:
+1. `DELETE` Statement Behavior:
+
+  The `DELETE` statement itself does not raise a `NOT FOUND` condition if no rows match the criteria. Instead, it simply performs no action and completes successfully. The absence of matching rows does not constitute an error or condition that would invoke the handler.
+
+2. Use of Handlers:
+
+  The `NOT FOUND` handler is primarily relevant when working with cursors or when using statements that explicitly return no data (like `SELECT ... INTO`). For operations like `DELETE`, you typically check how many rows were affected using `ROW_COUNT()` or similar methods.
+
+#### Alternative Approach
+If you want to handle cases where no rows were deleted and provide feedback accordingly, you can check the number of affected rows after the `DELETE` operation:
+```sql
+DELIMITER //
+
+CREATE PROCEDURE DeleteBrand(IN brand_id INT UNSIGNED)
+BEGIN
+    DECLARE affected_rows INT;
+
+    DELETE FROM brand WHERE id = brand_id;
+    SET affected_rows = ROW_COUNT();
+
+    IF affected_rows = 0 THEN
+        SELECT "Not found" AS message;
+    ELSE
+        SELECT CONCAT("Deleted brand with ID: ", brand_id) AS message;
+    END IF;
+END//
+
+DELIMITER ;
+```
+
+## Using `FOUND_ROWS()`
+The `FOUND_ROWS()` function in MySQL is used to retrieve the number of rows that would have been returned by a previous `SELECT` statement if it had not included a `LIMIT` clause. This function is particularly useful in pagination scenarios where you want to know the total number of rows that match a query condition, even if you're only displaying a subset of those rows.
+
+Key Points About `FOUND_ROWS()`:
+1. Usage with `SQL_CALC_FOUND_ROWS`:
+
+    To use `FOUND_ROWS()`, you typically pair it with the `SQL_CALC_FOUND_ROWS` option in your `SELECT` statement. This instructs MySQL to calculate the total number of matching rows without the limit.
+
+    Example:
+    ```sql
+    SELECT SQL_CALC_FOUND_ROWS * FROM your_table WHERE some_condition LIMIT 10;
+    SELECT FOUND_ROWS();
+    ```
+
+    The first query retrieves up to 10 rows based on the condition, while the second query returns the total count of rows that match the condition without considering the limit.
+
+2. Behavior Without `SQL_CALC_FOUND_ROWS`:
+
+    If you call `FOUND_ROWS()` after a `SELECT` statement that does not use `SQL_CALC_FOUND_ROWS`, it returns the number of rows processed by the last statement, which may not be meaningful in terms of matching records.
+
+    For example, if you run:
+    ```sql
+    SELECT * FROM your_table LIMIT 10;
+    SELECT FOUND_ROWS();
+    ```
+
+    The second call will return the number of rows processed by the previous query, which is 10 (the limit), rather than the total number of matching rows.
+
+3. Considerations with `UNION`:
+
+    When using `UNION`, `SQL_CALC_FOUND_ROWS` can behave differently. If you use `UNION ALL`, it will count all rows correctly. However, if you use `UNION` without `ALL`, it will eliminate duplicates and may lead to inaccurate counts since `FOUND_ROWS()` will reflect only the unique results after unioning.
+
+    For accurate results when using `UNION`, it's recommended to apply `SQL_CALC_FOUND_ROWS` only on the first part of the union.
+
+4. Performance:
+
+    sing `SQL_CALC_FOUND_ROWS` can lead to performance overhead because MySQL has to calculate and store the total count in memory. In scenarios with large datasets or complex queries, consider using separate count queries for better performance.
+
+Summary:
+1. Functionality: `FOUND_ROWS()` provides a way to retrieve the total count of rows that would be returned by a query without limits.
+2. Pairing with `SQL_CALC_FOUND_ROWS`: Always use it in conjunction with `SQL_CALC_FOUND_ROWS` for meaningful results.
+3. Behavior with `UNION`: Be cautious when using it with `UNION`; prefer `UNION ALL` for accurate counts.
+4. Performance Considerations: Evaluate performance impacts when using this feature, especially with large datasets.
+
+This functionality is particularly useful for implementing pagination in applications where knowing both the current page's data and the total available records is essential for user navigation and experience.
+
+## Regular expressions (`REGEXP()`)
+
+### Using Backslash
+In MySQL, the use of double backslashes in regular expressions is necessary due to how strings and escape sequences are processed at different levels. Here’s a detailed explanation of why you need to use double backslashes in your regular expression:
+1. Escaping in Strings
+
+    When you write a string in SQL, certain characters, including the backslash (`\`), have special meanings. To include a literal backslash in a string, you need to escape it. This is done by using another backslash:
+    - Single Backslash: `\`
+    - Double Backslash: `\\` (This represents a single backslash in the actual string)
+
+2. Regular Expressions
+
+    Regular expressions themselves also use the backslash as an escape character. For example:
+    - To match a literal dot (`.`), you would write `\.` in a regex.
+    - To match a whitespace character, you would use `\s`.
+
+3. Combining Both Levels
+
+    When you combine these two layers (the string layer and the regex layer), you end up needing to escape the backslash twice:
+    - In the SQL String: You need to write `\\` to represent a single backslash.
+    - In the Regex: If you want to express something like `\s` (to match whitespace), you must write it as `\\s` in your SQL string.
+
+#### Example Breakdown
+
+For your specific case with the regex pattern:
+```sql
+CONSTRAINT chk_car_license_plate CHECK(license_plate REGEXP '^[а-я]{1}\\d{3}[а-я]{2}\\d{2,3}$')
+```
+
+- The first `\\` becomes a single `\` when interpreted by MySQL.
+- The regex engine then sees this as `\d`, which matches any digit.
+
+#### Summary of Why Double Backslashes Are Needed
+- **String Escaping**: In SQL strings, backslashes must be escaped with another backslash.
+- **Regex Escaping**: In regex patterns, certain characters must also be escaped with a backslash.
+- **Final Interpretation**: Therefore, when writing regex patterns within SQL strings, each backslash must be doubled to ensure that it is interpreted correctly by both the SQL parser and the regex engine.
+
+#### Conclusion
+The requirement for double backslashes is common in many programming languages and environments where escape sequences are processed at multiple levels. Understanding this concept helps avoid confusion when working with regular expressions in SQL or any other context that involves nested escaping.
+
+## Run scripts
 https://stackoverflow.com/questions/8940230/how-to-run-sql-script-in-mysql
 
 If you’re at the MySQL command line `mysql>` you have to declare the SQL file as source.
