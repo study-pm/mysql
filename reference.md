@@ -97,7 +97,6 @@
     - [Example Breakdown](#example-breakdown)
     - [Summary of Why Double Backslashes Are Needed](#summary-of-why-double-backslashes-are-needed)
     - [Conclusion](#conclusion)
-- [Run scripts](#run-scripts)
 
 ## Basic Commands
 
@@ -1696,26 +1695,3 @@ CONSTRAINT chk_car_license_plate CHECK(license_plate REGEXP '^[а-я]{1}\\d{3}[�
 
 #### Conclusion
 The requirement for double backslashes is common in many programming languages and environments where escape sequences are processed at multiple levels. Understanding this concept helps avoid confusion when working with regular expressions in SQL or any other context that involves nested escaping.
-
-## Run scripts
-https://stackoverflow.com/questions/8940230/how-to-run-sql-script-in-mysql
-
-If you’re at the MySQL command line `mysql>` you have to declare the SQL file as source.
-```
-mysql> source \home\user\Desktop\test.sql;
-```
-
-Use the MySQL command line client:
-```
-mysql -h hostname -u user database < path/to/test.sql
-```
-
-The other option to do that will be: `mysql --user="username" --database="databasename" --password="yourpassword" < "filepath"`:
-```
-mysql -u yourusername -p yourpassword a_new_database_name < text_file
-```
-
-All the top answers are good. But just in case someone wants to run the query from a text file on a remote server **AND** save results to a file (instead of showing on console), you can do this:
-```
-mysql -u yourusername -p yourpassword yourdatabase < query_file > results_file
-```
