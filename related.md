@@ -11,3 +11,4 @@
 - [ ] [What is a Database Model](https://www.lucidchart.com/pages/database-diagram/database-models)
 - [x] [Вся правда о нормализации баз данных](https://www.youtube.com/watch?v=1GWx5CZdSCg)
 - [x] [SQL Academy](https://sql-academy.org/ru/guide/intro-intro)
+- [ ] [Базы данных](https://www.youtube.com/playlist?list=PLf30vI0hEi1v435cBmZSHkr1QAJdOk9mb) by [R class Tech](https://www.youtube.com/@Rclass)
