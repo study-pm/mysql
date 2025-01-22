@@ -42,6 +42,7 @@ This section defines the general project's structure and provides a top-level fi
 ├── 🗎 notes.md           # Subject information
 ├── 🗎 README.md          # Project overview
 ├── 🗎 related.md         # Related sources
+├── 🗎 research.md        # Research articles
 ├── 🗎 SETUP.md           # Setup instructions
 ├─> 🗎 styles.css         # Custom stylesheet
 └─> 🗎 todos.md           # Task list
