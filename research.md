@@ -8,3 +8,8 @@
 - [ ] [5.3.4.7 Pattern Matching](https://dev.mysql.com/doc/refman/8.0/en/pattern-matching.html)
 - [ ] [How to move columns in a MySQL table?](https://stackoverflow.com/questions/6805426/how-to-move-columns-in-a-mysql-table)
 - [ ] [15.1.9 ALTER TABLE Statement](https://dev.mysql.com/doc/refman/8.0/en/alter-table.html)
+- [ ] [Основы индексирования и возможности EXPLAIN в MySQL](https://highload.guide/blog/basics_indexing.html)
+- [ ] [B-дерево](https://ru.wikipedia.org/wiki/B-%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BE)
+- [ ] [Кластерные и «обычные» индексы MySQL (InnoDB)](https://habr.com/ru/articles/141767/)
+- [ ] [15.8.2 EXPLAIN Statement](https://dev.mysql.com/doc/refman/8.0/en/explain.html)
+- [ ] [10.8.2 EXPLAIN Output Format](https://dev.mysql.com/doc/refman/8.0/en/explain-output.html)
