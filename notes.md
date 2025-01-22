@@ -7143,6 +7143,8 @@ ALTER TABLE Products DROP PRIMARY KEY;
 ## Тема 2.9 Индексирование таблиц
 [6728ec8a5040133e8429e5d1](https://e-learn.petrocollege.ru/login/index.php#section-17)
 
+**Д/з** [1.1] 52-56; [2.1] 143-145; оформление отчета по практической работе
+
 ### Организация памяти баз данных
 [678e2f715040133e8429ebe6](https://www.youtube.com/watch?v=0F2gLX9sH4w)
 
