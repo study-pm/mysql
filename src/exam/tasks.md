@@ -1,0 +1,19 @@
+- [ ] Display dbs
+- [ ] Create db, display created settings
+- [ ] Create tables, display tables, structure, constraints, rename table, alter/modify tables
+- [ ] Add/Create asc/desc(for dates) indexes, display indices, rename, drop indexes (simple, unique, ...)
+- [ ] Make requests
+- [ ] Wrap requests in pocedures: Procedure CRUD with In/Out param, CASE (gender), IF
+- [ ] On Update Check date trigger
+- [ ] Exists
+- [ ] Any
+- [ ] All
+- [ ] Trigger
+- [ ] Function
+- [ ] 18: Trigger on insert/on update that checks assignment.set_date <= performance.set_date
+- [ ] 1: Add transaction for procedure to add player title as varchar, check if title exists, get title id and assign to a new player entry
+- [ ] 2: Add update trigger for checking the worker's birth date
+- [ ] 3: Add update trigger for checking the tourist's birth date, start_year
+- [ ] 4: Add update trigger for checking the candidate's birth_date
+- [ ] Use CASE to show gender for tasks 1, 2, 3, 4
+- [ ] Table TOTALS

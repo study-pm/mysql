@@ -1,0 +1,7 @@
+-- Players
+CREATE TABLE IF NOT EXISTS player (
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    age INT UNSIGNED NOT NULL CHECK(age > 10 AND age < 120),
+    PRIMARY KEY (id),
+    FOREIGN KEY (country_id) REFERENCES country(id)
+);
